@@ -201,3 +201,26 @@ void Memory::changeInterruptChange (InterruptionStatusChange new_status)
 {
    cpu_int_status_cahnge_needed = new_status;
 }
+
+std::string Memory::regString (Register reg)
+{
+   switch (reg)
+   {
+      case A: return "A";
+      case F: return "F";
+      case B: return "B";
+      case C: return "C";
+      case D: return "D";
+      case E: return "E";
+      case H: return "H";
+      case L: return "L";
+      case AF: return "AF";
+      case BC: return "BC";
+      case DE: return "DE";
+      case HL: return "HL";
+      case SP: return "SP";
+      case PC: return "PC";
+   }
+
+   return "???";
+}

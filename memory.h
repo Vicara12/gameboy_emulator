@@ -17,6 +17,9 @@ public:
   // returns a string with the number in hexadecimal, mainly for debugging
   static std::string getHex (int n);
 
+  // returns a string with the letter of the register
+  static std::string regString (Register reg);
+
   static bool registerIs16bits (Register reg);
 
   static Memory* getInstance();

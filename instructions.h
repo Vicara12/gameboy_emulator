@@ -13,6 +13,7 @@ public:
 
    Instruction (unsigned byte_lenght, unsigned instruction_cycles);
    virtual void execute (uint8_t inst_first_byte, uint8_t inst_second_byte) = 0;
+   //virtual void name () = 0;
    unsigned getByteSize () const;
    unsigned getCycleLenght () const;
 

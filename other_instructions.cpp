@@ -71,7 +71,7 @@ void JumpCall::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 
    if (jump)
    {
-      int value;
+      int value = 0;
       uint16_t pc = memory->readReg(Memory::Register::PC);
 
       // if the instruction is call, save pc to stack first
@@ -117,7 +117,7 @@ Return::Return (bool reti, Source source, Type type) :
       Instruction(1, 2),
       reti_(reti),
       jump(false),
-      jump_cpu_cycles(source == INCONDITIONAL ? 16 : 20),
+      jump_cpu_cycles(type == INCONDITIONAL ? 16 : 20),
       source_(source),
       type_(type) {}
 
@@ -138,7 +138,7 @@ void Return::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 
    if (jump)
    {
-      uint16_t address;
+      uint16_t address = 0;
 
       switch (source_)
       {

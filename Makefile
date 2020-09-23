@@ -1,13 +1,15 @@
 
-OPTIONS = -D_GLIBCXX_DEBUG -O2 -Wall -Wextra -Werror -Wno-sign-compare -std=c++11
+OPTIONS = -D_GLIBCXX_DEBUG -O2 -Wall -Werror -Wno-unused-parameter -Wextra\
+ -Wno-sign-compare -std=c++11
 
-ALL_O = main.o memory.o
+ALL_O = main.o memory.o arithmetic_instructions.o instructions.o\
+ load_instructions.o other_instructions.o shift_instructions.o
 
-EXE_NAME =gameboi.exe
+EXE_NAME = gameboi.exe
 
 all: $(EXE_NAME)
 
-gameboi.exe: main.o memory.o
+$(EXE_NAME): $(ALL_O)
 	g++ $(OPTIONS) -o $(EXE_NAME) $(ALL_O)
 
 main.o: main.cpp
@@ -15,6 +17,21 @@ main.o: main.cpp
 
 memory.o: memory.cpp memory.h bootrom.h
 	g++ $(OPTIONS) -c memory.cpp
+
+instructions.o: instructions.h instructions.cpp
+	g++ $(OPTIONS) -c instructions.cpp
+
+arithmetic_instructions.o: arithmetic_instructions.h arithmetic_instructions.cpp instructions.h
+	g++ $(OPTIONS) -c arithmetic_instructions.cpp
+
+load_instructions.o: load_instructions.h load_instructions.cpp instructions.h
+	g++ $(OPTIONS) -c load_instructions.cpp
+
+other_instructions.o: other_instructions.h other_instructions.cpp instructions.h
+	g++ $(OPTIONS) -c other_instructions.cpp
+
+shift_instructions.o: shift_instructions.h shift_instructions.cpp instructions.h
+	g++ $(OPTIONS) -c shift_instructions.cpp
 
 clean:
 	rm $(ALL_O) $(EXE_NAME)

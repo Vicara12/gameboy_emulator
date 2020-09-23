@@ -16,6 +16,16 @@ unsigned Instruction::getCycleLenght () const
    return instr_cycles;
 }
 
+unsigned Instruction::extraCycleTime () const
+{
+   return 0;
+}
+
+bool Instruction::longPathTaken () const
+{
+   return false;
+}
+
 InvalidInstruction::InvalidInstruction () :
       Instruction(0,0) {}
 
@@ -23,14 +33,4 @@ void InvalidInstruction::execute (uint8_t inst_first_byte,
                                   uint8_t inst_second_byte)
 {
    throw InstructionDoesNotExist();
-}
-
-unsigned InvalidInstruction::extraCycleTime () const
-{
-   return 0;
-}
-
-bool InvalidInstruction::longPathTaken () const
-{
-   return false;
 }

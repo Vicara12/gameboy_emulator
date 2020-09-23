@@ -23,7 +23,7 @@ void Rotate::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
    // opposite bit: bit 0 if rotate left and bit 7 if rotate right
 
    // save opposite bit in case through_c is active
-   bool bit = val & (right_ ? 0x80 : 0x01) != 0;
+   bool bit = ((val & (right_ ? 0x80 : 0x01)) != 0);
    bool flag = memory->readFlag(Memory::Flag::C_f);
 
    // if through_c, actualize flag with the new bit
@@ -67,7 +67,7 @@ void Shift::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
    // opposite bit: bit 0 if rotate left and bit 7 if rotate right
 
    // save opposite bit in case through_c is active
-   bool bit = val & (right_ ? 0x80 : 0x01) != 0;
+   bool bit = ((val & (right_ ? 0x80 : 0x01)) != 0);
    bool flag = memory->readFlag(Memory::Flag::C_f);
 
    // if through_c, actualize flag with the new bit
@@ -85,6 +85,9 @@ void Shift::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
       memory->writeMem(memory->readReg(reg_), val);
    else
       memory->writeReg(reg_, val);
+   
+   // write flag
+   memory->writeFlag(Memory::Flag::C_f, flag);
 }
 
 // ~~~~~~~~~~~~~~~~~
@@ -142,7 +145,7 @@ void Bit::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
       val = memory->readReg(reg_);
 
    // set flags
-   memory->writeFlag(Memory::Flag::Z_f, val & (0x01 << bit_) == 0);
+   memory->writeFlag(Memory::Flag::Z_f, (val & (0x01 << bit_)) == 0);
    memory->writeFlag(Memory::Flag::N_f, 0);
    memory->writeFlag(Memory::Flag::H_f, 1);
 }

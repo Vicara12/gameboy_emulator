@@ -8,15 +8,15 @@ IncAI::IncAI (Memory::Register reg) :
 void IncAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint8_t reg_val = Memory::registerIs16bits(reg_) ?
-                           reg_val = memory->readMem(memory->readReg(reg_)) :
-                           reg_val = memory->readReg(reg_);
+                           memory->readMem(memory->readReg(reg_)) :
+                           memory->readReg(reg_);
 
    memory->writeReg(reg_, ++reg_val);
 
    // write flags
    memory->writeFlag(Memory::Flag::Z_f, reg_val == 0);
    memory->writeFlag(Memory::Flag::N_f, false);
-   memory->writeFlag(Memory::Flag::H_f, reg_val & 0x0f == 0);
+   memory->writeFlag(Memory::Flag::H_f, (reg_val & 0x0f) == 0);
 }
 
 // ~~~~~~~~~~~~~~~~~
@@ -28,14 +28,14 @@ DecAI::DecAI (Memory::Register reg) :
 void DecAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint8_t reg_val = Memory::registerIs16bits(reg_) ?
-                           reg_val = memory->readMem(memory->readReg(reg_)) :
-                           reg_val = memory->readReg(reg_);
+                           memory->readMem(memory->readReg(reg_)) :
+                           memory->readReg(reg_);
    memory->writeReg(reg_, --reg_val);
 
    // write flags
    memory->writeFlag(Memory::Flag::Z_f, reg_val == 0);
    memory->writeFlag(Memory::Flag::N_f, true);
-   memory->writeFlag(Memory::Flag::H_f, reg_val & 0x0f == 0x0f);
+   memory->writeFlag(Memory::Flag::H_f, (reg_val & 0x0f) == 0x0f);
 }
 
 // ~~~~~~~~~~~~~~~~~
@@ -142,10 +142,10 @@ void DecimalAdjustAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte
 
 // ~~~~~~~~~~~~~~~~~
 
-DecimalAdjustAI::DecimalAdjustAI () :
+CompAAI::CompAAI () :
       Instruction(1, 1) {}
 
-void DecimalAdjustAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
+void CompAAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint8_t reg_a = memory->readReg(Memory::Register::A);
 
@@ -173,8 +173,8 @@ void ChangeCFlagAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 
 IncDec16BitAI::IncDec16BitAI (Memory::Register reg, bool inc) :
       Instruction(1, 2),
-      reg_ (reg),
-      inc_ (inc) {}
+      inc_ (inc),
+      reg_ (reg) {}
 
 void IncDec16BitAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
