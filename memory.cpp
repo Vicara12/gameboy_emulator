@@ -202,7 +202,7 @@ void Memory::changeInterruptChange (InterruptionStatusChange new_status)
    cpu_int_status_cahnge_needed = new_status;
 }
 
-std::string Memory::regString (Register reg)
+std::string Memory::regString (Register reg, bool pointer)
 {
    switch (reg)
    {
@@ -214,12 +214,12 @@ std::string Memory::regString (Register reg)
       case E: return "E";
       case H: return "H";
       case L: return "L";
-      case AF: return "AF";
-      case BC: return "BC";
-      case DE: return "DE";
-      case HL: return "HL";
-      case SP: return "SP";
-      case PC: return "PC";
+      case AF: return (pointer ? "(AF)" : "AF");
+      case BC: return (pointer ? "(BC)" : "BC");
+      case DE: return (pointer ? "(DE)" : "DE");
+      case HL: return (pointer ? "(HL)" : "HL");
+      case SP: return (pointer ? "(SP)" : "SP");
+      case PC: return (pointer ? "(PC)" : "PC");
    }
 
    return "???";

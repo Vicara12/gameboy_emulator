@@ -1,8 +1,8 @@
 #ifndef CPU_H_
 #define CPU_H_
 
-#include "instruction_set_vec.h"
 #include "memory.h"
+#include "instruction_set_vec.h"
 
 class CPU
 {

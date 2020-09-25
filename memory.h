@@ -18,7 +18,7 @@ public:
   static std::string getHex (int n);
 
   // returns a string with the letter of the register
-  static std::string regString (Register reg);
+  static std::string regString (Register reg, bool pointer = true);
 
   static bool registerIs16bits (Register reg);
 

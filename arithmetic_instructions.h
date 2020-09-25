@@ -130,6 +130,7 @@ public:
 
    ADDr8SPAI ();
    void execute (uint8_t inst_first_byte, uint8_t inst_second_byte);
+
 };
 
 #endif

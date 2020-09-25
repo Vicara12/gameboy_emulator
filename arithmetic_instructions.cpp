@@ -2,7 +2,8 @@
 
 
 IncAI::IncAI (Memory::Register reg) :
-      Instruction(1, 1),
+      Instruction(1, 1, "INC \t" + Memory::regString(reg),
+                  "(increment register " + Memory::regString(reg)),
       reg_(reg) {}
 
 void IncAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
@@ -22,7 +23,8 @@ void IncAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 // ~~~~~~~~~~~~~~~~~
 
 DecAI::DecAI (Memory::Register reg) :
-      Instruction(1, 1),
+      Instruction(1, 1, "DEC \t" + Memory::regString(reg),
+                  "(decrement register " + Memory::regString(reg)),
       reg_(reg) {}
 
 void DecAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
@@ -44,10 +46,34 @@ ArithmeticOperationAI::ArithmeticOperationAI (Memory::Register reg,
                                               Operation op,
                                               bool use_reg) :
       Instruction(1 + (not use_reg), 1 + (not use_reg) +
-                                          Memory::registerIs16bits(reg_)),
+                        Memory::registerIs16bits(reg_), "", ""),
       reg_(reg),
       op_(op),
-      use_reg_(use_reg) {}
+      use_reg_(use_reg)
+{
+   std::string opname, long_opname;
+
+   switch (op_)
+   {
+      case ADD: {opname = "ADD"; long_opname = "add"; break;}
+      case ADC: {opname = "ADC"; long_opname = "add"; break;}
+      case SUB: {opname = "SUB"; long_opname = "substract"; break;}
+      case SBC: {opname = "SBC"; long_opname = "substract"; break;}
+      case AND: {opname = "AND"; long_opname = "bitwise AND between"; break;}
+      case XOR: {opname = "XOR"; long_opname = "bitwise XOR between"; break;}
+      case OR: {opname = "OR"; long_opname = "bitwise OR between"; break;}
+      case CP: {opname = "CP"; long_opname = "compare reg A and"; break;}
+   }
+
+   Instruction::instr_name_ = opname + " \t" +
+                        ((op_ == ADD or op == ADC or op_ == SBC) ? "A, " : "") +
+                        (use_reg ? Memory::regString(reg_) : "r8");
+   
+   Instruction::verbose_name_ = "(" + long_opname + " registers A and " +
+                                 (use_reg ? Memory::regString(reg_) : "d8") +
+                                 (op_ == ADC or op_ == SBC ? " with carry" : "")
+                                 + ")"; 
+}
 
 void ArithmeticOperationAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -106,7 +132,7 @@ void ArithmeticOperationAI::execute (uint8_t inst_first_byte, uint8_t inst_secon
 // ~~~~~~~~~~~~~~~~~
 
 DecimalAdjustAI::DecimalAdjustAI () :
-      Instruction(1, 1) {}
+      Instruction(1, 1, "DAA \t", "(decimal adjust register A)") {}
 
 void DecimalAdjustAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -143,7 +169,7 @@ void DecimalAdjustAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte
 // ~~~~~~~~~~~~~~~~~
 
 CompAAI::CompAAI () :
-      Instruction(1, 1) {}
+      Instruction(1, 1, "CPL \t", "(flip bits of register A)") {}
 
 void CompAAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -157,7 +183,8 @@ void CompAAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 // ~~~~~~~~~~~~~~~~~
 
 ChangeCFlagAI::ChangeCFlagAI (bool complement) :
-      Instruction(1, 1),
+      Instruction(1, 1, (complement ? "CCF \t" : "SCF \t"),
+                  "(" + std::string(complement ? "flip" : "set") + "carry flag)"),
       complement_ (complement) {}
 
 void ChangeCFlagAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
@@ -168,11 +195,13 @@ void ChangeCFlagAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
    memory->writeFlag(Memory::Flag::N_f, 0);
    memory->writeFlag(Memory::Flag::H_f, 0);
 }
-
 // ~~~~~~~~~~~~~~~~~
 
 IncDec16BitAI::IncDec16BitAI (Memory::Register reg, bool inc) :
-      Instruction(1, 2),
+      Instruction(1, 2, (inc ? "INC \t" : "DEC \t") +
+                     Memory::regString(reg, false),
+                  "(" + std::string(inc ? "increment" : "decrement") +
+                     " register " + Memory::regString(reg, false)),
       inc_ (inc),
       reg_ (reg) {}
 
@@ -186,7 +215,8 @@ void IncDec16BitAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 // ~~~~~~~~~~~~~~~~~
 
 Add16BitsAI::Add16BitsAI (Memory::Register reg) :
-      Instruction(1, 2),
+      Instruction(1, 2, "ADD \tHL, " + Memory::regString(reg, false),
+                  "(add registers HL and " + Memory::regString(reg, false)),
       reg_ (reg) {}
 
 void Add16BitsAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
@@ -203,7 +233,8 @@ void Add16BitsAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 // ~~~~~~~~~~~~~~~~~
 
 ADDr8SPAI::ADDr8SPAI () :
-      Instruction(2, 4) {}
+      Instruction(2, 4, "ADD \tSP, r8",
+                  "(add signed r8 value to SP register)") {}
 
 void ADDr8SPAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {

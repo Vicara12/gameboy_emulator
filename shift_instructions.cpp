@@ -2,10 +2,32 @@
 #include "shift_instructions.h"
 
 Rotate::Rotate (bool right, bool through_c, Memory::Register reg, bool fast_a) :
-      Instruction(fast_a ? 1 : 2, 1 + (not fast_a) + 2*Memory::registerIs16bits(reg)),
+      Instruction(fast_a ? 1 : 2,
+                  1 + (not fast_a) + 2*Memory::registerIs16bits(reg),
+                  "", ""),
       right_(right),
       through_c_(through_c),
-      reg_(reg) {}
+      reg_(reg)
+{
+   if (fast_a)
+   {
+      Instruction::instr_name_ = ("R" + std::string(right_ ? "R" : "L") +
+                                  (through_c_ ? "C" : "") + "A");
+      Instruction::verbose_name_ = ("(rotate register A " +
+                                 std::string(right_ ? "right" : "left") +
+                                 (through_c_ ? "through carry" : "") + ")");
+   }
+   else
+   {
+      Instruction::instr_name_ = ("R" + std::string(right_ ? "R" : "L") +
+                                  (through_c_ ? "C" : "") + "\t" +
+                                  Memory::regString(reg_));
+      Instruction::verbose_name_ = ("(rotate register " + Memory::regString(reg_)
+                                 + std::string(right_ ? " right" : " left") +
+                                 (through_c_ ? " through carry" : "") + ")");
+   }
+   
+}
 
 void Rotate::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -46,10 +68,19 @@ void Rotate::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 // ~~~~~~~~~~~~~~~~~
 
 Shift::Shift (bool right, Memory::Register reg, bool logical) :
-      Instruction(2, 2 + 2*Memory::registerIs16bits(reg)),
+      Instruction(2, 2 + 2*Memory::registerIs16bits(reg), "", ""),
       right_(right),
       logical_(logical),
-      reg_(reg) {}
+      reg_(reg)
+{
+   
+   Instruction::instr_name_ = ("S" + std::string(right_ ? "R" : "L") +
+                              (logical_ ? "L" : "A") + "\t" +
+                              Memory::regString(reg_));
+   Instruction::verbose_name_ = ("(shift register " + Memory::regString(reg_)
+                              + std::string(right_ ? " right" : " left") +
+                              (logical_ ? " logical" : " arithmetic") + ")");
+}
 
 void Shift::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -93,7 +124,9 @@ void Shift::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 // ~~~~~~~~~~~~~~~~~
 
 Swap::Swap (Memory::Register reg) :
-      Instruction(2, 2 + 2*Memory::registerIs16bits(reg)),
+      Instruction(2, 2 + 2*Memory::registerIs16bits(reg),
+                  "SWAP \t" + Memory::regString(reg),
+                  "(swap nibbles of register " + Memory::regString(reg) + ")"),
       reg_(reg) {}
 
 void Swap::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
@@ -127,7 +160,10 @@ void Swap::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 // ~~~~~~~~~~~~~~~~~
 
 Bit::Bit (Memory::Register reg, unsigned bit) :
-      Instruction(2, 2 + 2*Memory::registerIs16bits(reg)),
+      Instruction(2, 2 + 2*Memory::registerIs16bits(reg),
+      "BIT \t" + std::to_string(bit) + ", " + Memory::regString(reg),
+      "(set Z flag to bit " + std::to_string(reg) + " of register " +
+         Memory::regString(reg) + ")"),
       reg_(reg),
       bit_(bit) {}
 
@@ -153,7 +189,12 @@ void Bit::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 // ~~~~~~~~~~~~~~~~~
 
 SetResetBit::SetResetBit (Memory::Register reg, unsigned bit, bool set) :
-      Instruction(2, 2 + 2*Memory::registerIs16bits(reg)),
+      Instruction(2, 2 + 2*Memory::registerIs16bits(reg),
+                  (set ? "SET" : "RES") + std::string(" \t") +
+                  std::to_string(bit) + ", " + Memory::regString(reg),
+                  "(" + std::string(set ? "set" : "reset") + " bit " +
+                  std::to_string(reg) + " of register " +
+                  Memory::regString(reg) + ")") ,
       reg_(reg),
       bit_(bit),
       set_(set) {}

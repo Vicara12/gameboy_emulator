@@ -11,9 +11,12 @@ class Instruction
 {
 public:
 
-   Instruction (unsigned byte_lenght, unsigned instruction_cycles);
+   Instruction (unsigned byte_lenght,
+                unsigned instruction_cycles,
+                std::string instr_name,
+                std::string verbose_name);
    virtual void execute (uint8_t inst_first_byte, uint8_t inst_second_byte) = 0;
-   //virtual void name () = 0;
+   std::string name (bool verbose);
    unsigned getByteSize () const;
    unsigned getCycleLenght () const;
 
@@ -23,6 +26,8 @@ public:
    virtual bool longPathTaken () const;
 
 protected:
+
+   std::string instr_name_, verbose_name_;
 
    unsigned instr_cycles;        // number of instruction cycles to execute
    unsigned instr_byte_lenght;   // lenght of the instruction in bytes

@@ -1,10 +1,4 @@
-arithmetic_instructions.o
+*.o
 gameboi.exe
-instructions.o
-load_instructions.o
-main.o
-memory.o
 notes.txt
-other_instructions.o
-shift_instructions.o
 .vscode/settings.json
