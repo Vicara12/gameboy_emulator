@@ -46,3 +46,6 @@ clean:
 
 git:
 	git add *.cpp *.h bootrom.txt Makefile
+
+count:
+	git ls-files | xargs wc -l
