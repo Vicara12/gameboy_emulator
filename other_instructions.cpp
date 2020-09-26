@@ -56,34 +56,34 @@ JumpCall::JumpCall (bool call, bool relative, Source source, Type type) :
       source_(source),
       type_(type)
 {
-   std::string source_str, type_str;
+   std::string source_str, type_str, src_str, tp_str;
 
    switch (source_)
    {
-      case r8: {source_str = "signed 8bit immediate"; break;}
-      case a16: {source_str = "unsigned 16bit immediate"; break;}
-      case HL: {source_str = "16bit value stored at addres HL"; break;}
+      case r8: {source_str = "r8"; src_str = "r8"; break;}
+      case a16: {source_str = "a16"; src_str = "a16"; break;}
+      case HL: {source_str = "16bit value stored at addres HL"; src_str = "HL"; break;}
    }
 
    switch (type_)
    {
-      case NZ: {type_str = "zero flag is clear"; break;}
-      case Z: {type_str = "zero flag is set"; break;}
-      case NC: {type_str = "substraction flag is clear"; break;}
-      case C: {type_str = "substraction flag is set"; break;}
-      case INCONDITIONAL: {type_str = "true"; break;}
+      case NZ: {type_str = "zero flag is clear"; tp_str = "NZ"; break;}
+      case Z: {type_str = "zero flag is set"; tp_str = "Z"; break;}
+      case NC: {type_str = "substraction flag is clear"; tp_str = "NC"; break;}
+      case C: {type_str = "substraction flag is set"; tp_str = "C"; break;}
+      case INCONDITIONAL: {type_str = "true"; tp_str = ""; break;}
    }
 
    if (call)
    {
-      Instruction::instr_name_ = "CALL \t" + type_str + ", " + source_str;
+      Instruction::instr_name_ = "CALL \t" + tp_str + ", " + src_str;
       Instruction::verbose_name_ = "(save PC in stack and set it to "
                                    + source_str + " if " + source_str + ")";
    }
    else
    {
       Instruction::instr_name_ = (relative ? "JR" : "JP") + std::string(" \t") +
-                                 type_str + ", " + source_str;
+                                 tp_str + ", " + src_str;
       Instruction::verbose_name_ = std::string("(") + 
                                  (relative ? "add to PC the value" : "set PC") +
                                  " at address " + source_str + " if " +

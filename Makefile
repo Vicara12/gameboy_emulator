@@ -12,6 +12,7 @@ all: $(EXE_NAME)
 
 $(EXE_NAME): $(ALL_O)
 	g++ $(OPTIONS) -o $(EXE_NAME) $(ALL_O)
+	echo 'DONE!'
 
 main.o: main.cpp
 	g++ $(OPTIONS) -c main.cpp
@@ -19,14 +20,14 @@ main.o: main.cpp
 memory.o: memory.cpp memory.h bootrom.h
 	g++ $(OPTIONS) -c memory.cpp
 
-cpu.o: cpu.h cpu.cpp instruction_set_vec.h memory.h
+cpu.o: cpu.h cpu.cpp memory.h
 	g++ $(OPTIONS) -c cpu.cpp
 
 instructions.o: instructions.h instructions.cpp
 	g++ $(OPTIONS) -c instructions.cpp
 
 instruction_set_vec.o: instructions.h arithmetic_instructions.h load_instructions.h\
- other_instructions.h shift_instructions.h instruction_set_vec.h instruction_set_vec.cpp
+ other_instructions.h shift_instructions.h cpu.h instruction_set_vec.cpp
 	g++ $(OPTIONS) -c instruction_set_vec.cpp
 
 arithmetic_instructions.o: arithmetic_instructions.h arithmetic_instructions.cpp instructions.h

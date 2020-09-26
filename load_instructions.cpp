@@ -55,8 +55,8 @@ DoubleByteLD::DoubleByteLD (bool reg_at_read, bool register_a) :
    Instruction::verbose_name_ = "(load value at " +
                                 (reg_at_read ? "register " + reg_str :
                                           "memory location indicated by a16") +
-                                 " to " + (reg_at_read ? "register " + reg_str :
-                                 "memory location indicated by a16") + ")";
+                                 " to " + (reg_at_read ? "memory location indicated by a16"
+                                  : "register " + reg_str) + ")";
 }
 
 void DoubleByteLD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
@@ -121,7 +121,7 @@ FF00LD::FF00LD (bool register_a_read, bool use_register_c) :
    Instruction::verbose_name_ = "(load value from " +
                                 (register_a_read ? "register A" : verbose_str) +
                                 " to " +
-                                (register_a_read ? "register A" : verbose_str) +
+                                (register_a_read ? verbose_str : "register A") +
                                 ")";
 }
 

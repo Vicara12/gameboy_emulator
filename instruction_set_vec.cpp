@@ -1,13 +1,13 @@
 
-#include "instruction_set_vec.h"
+#include "cpu.h"
 
-void initInstructionVectors ()
+void CPU::initInstructionVectors ()
 {
 /*
  *    CODE FOR INITIATING THE INSTRUCTION_SET VECTOR
  */
 
-instruction_set[0x00] =  new NOP();
+instruction_set[0x00] = new NOP();
 instruction_set[0x01] = new Number16bitToRegLD(Memory::Register::BC);
 instruction_set[0x02] = new NormalLD(Memory::Register::BC, Memory::Register::A);
 instruction_set[0x03] = new IncDec16BitAI(Memory::Register::BC, true);
