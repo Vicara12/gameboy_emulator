@@ -18,6 +18,8 @@ bool Memory::registerIs16bits (Register reg)
 }
 
 Memory::Memory () :
+      debug_mode(false),
+      debug_flags_regs(false),
       cpu_halted(false),
       cpu_stopped(false),
       cpu_int_enabled(true),
@@ -28,6 +30,12 @@ Memory::Memory () :
    {
       internal_mem[i] = BOOT_ROM_CONTENT[i];
    }
+}
+
+void Memory::changeDebugMode (bool debug, bool show_flags_and_regs)
+{
+   debug_mode = debug;
+   debug_flags_regs = show_flags_and_regs;
 }
 
 void Memory::loadROM (std::string rom_file_name)
@@ -85,18 +93,27 @@ std::string Memory::getHex (int n)
    return std::string(buff);
 }
 
-uint8_t Memory::readMem (uint16_t address) const
+uint8_t Memory::readMem (uint16_t address, bool silent) const
 {
+   if (debug_mode and not silent)
+      std::cout << "r m: [" << getHex(address) << "]" << std::endl;
+
    return internal_mem[address];
 }
 
-void Memory::writeMem (uint16_t address, uint8_t value)
+void Memory::writeMem (uint16_t address, uint8_t value, bool silent)
 {
+   if (debug_mode and not silent)
+      std::cout << "W m: [" << getHex(address) << "] <- " << value << std::endl;
+
    internal_mem[address] = value;
 }
 
-uint16_t Memory::readReg (Register reg) const
+uint16_t Memory::readReg (Register reg, bool silent) const
 {
+   if (debug_mode and debug_flags_regs and not silent)
+      std::cout << "r r: " << regString(reg) << std::endl;
+
    switch (reg)
    {
       case A: return (0xff00 & reg_af) >> 8;
@@ -117,8 +134,11 @@ uint16_t Memory::readReg (Register reg) const
    return 0xffff;
 }
 
-void Memory::writeReg (Register reg, uint16_t value)
+void Memory::writeReg (Register reg, uint16_t value, bool silent)
 {
+   if (debug_mode and debug_flags_regs and not silent)
+      std::cout << "w r: " << regString(reg) << " <- " << getHex(value) << std::endl;
+
    switch (reg)
    {
       case A: {reg_af = (reg_af & 0x00ff) | (value << 8); break;}
@@ -138,16 +158,25 @@ void Memory::writeReg (Register reg, uint16_t value)
    }
 }
 
-bool Memory::readFlag (Flag f) const
+bool Memory::readFlag (Flag f, bool silent) const
 {
+   if (debug_mode and debug_flags_regs and not silent)
+      std::cout << "r f: " << flagString(f) << std::endl;
+
    if       (f == Z_f) return (reg_af & 0x0080) != 0;
    else if  (f == N_f) return (reg_af & 0x0040) != 0;
    else if  (f == H_f) return (reg_af & 0x0020) != 0;
    else                return (reg_af & 0x0010) != 0;
 }
 
-void Memory::writeFlag (Flag f, bool value)
+void Memory::writeFlag (Flag f, bool value, bool silent)
 {
+   if (debug_mode and debug_flags_regs and not silent)
+   {
+      std::cout << "w f: " << flagString(f) << " <- ";
+      std::cout << (value ? "set" : "clear") << std::endl;
+   }
+
    uint16_t mask = 0;
 
    switch (f)
@@ -169,6 +198,9 @@ bool Memory::cpuHalted () const
 
 void Memory::changeCpuHalt (bool halted)
 {
+   if (debug_mode)
+      std::cout << (halted ? "cpu halted" : "cpu continue (h)") << std::endl;
+
    cpu_halted = halted;
 }
 
@@ -179,6 +211,9 @@ bool Memory::cpuStopped () const
 
 void Memory::changeCpuStop (bool stop)
 {
+   if (debug_mode)
+      std::cout << (stop ? "cpu stopped" : "cpu continue (s)") << std::endl;
+
    cpu_stopped = stop;
 }
 
@@ -189,6 +224,8 @@ bool Memory::intEnabled () const
 
 void Memory::changeIntEnabled (bool int_enabled)
 {
+   if (debug_mode)
+      std::cout << (int_enabled ? "int en" : "int dis") << std::endl;
    cpu_int_enabled = int_enabled;
    cpu_int_status_cahnge_needed = NONE;
 }
@@ -220,6 +257,19 @@ std::string Memory::regString (Register reg, bool pointer)
       case HL: return (pointer ? "(HL)" : "HL");
       case SP: return (pointer ? "(SP)" : "SP");
       case PC: return (pointer ? "(PC)" : "PC");
+   }
+
+   return "???";
+}
+
+std::string Memory::flagString (Flag flag)
+{
+   switch (flag)
+   {
+      case Z_f: return "Z";
+      case N_f: return "N";
+      case H_f: return "H";
+      case C_f: return "C";
    }
 
    return "???";

@@ -16,7 +16,8 @@ public:
                 std::string instr_name,
                 std::string verbose_name);
    virtual void execute (uint8_t inst_first_byte, uint8_t inst_second_byte) = 0;
-   std::string name (bool verbose);
+   std::string name () const;
+   std::string description () const;
    unsigned getByteSize () const;
    unsigned getCycleLenght () const;
 

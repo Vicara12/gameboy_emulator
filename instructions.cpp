@@ -21,9 +21,14 @@ unsigned Instruction::getCycleLenght () const
    return instr_cycles;
 }
 
-std::string Instruction::name (bool verbose)
+std::string Instruction::name () const
 {
-   return (verbose ? instr_name_ + "\t" + verbose_name_ : instr_name_);
+   return instr_name_;
+}
+
+std::string Instruction::description () const
+{
+   return verbose_name_;
 }
 
 unsigned Instruction::extraCycleTime () const

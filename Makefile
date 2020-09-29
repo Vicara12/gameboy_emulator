@@ -12,7 +12,6 @@ all: $(EXE_NAME)
 
 $(EXE_NAME): $(ALL_O)
 	g++ $(OPTIONS) -o $(EXE_NAME) $(ALL_O)
-	echo 'DONE!'
 
 main.o: main.cpp
 	g++ $(OPTIONS) -c main.cpp

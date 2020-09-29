@@ -5,7 +5,11 @@ using namespace std;
 
 int main ()
 {
+   cout << "\n\n\n";
+
    CPU* cpu = new CPU();
 
-   cpu->displayInstructionSet(true);
+   cpu->changeDebugMode(true, true, true, true);
+
+   cpu->disasemble (0x00, 0x0100, true);
 }
