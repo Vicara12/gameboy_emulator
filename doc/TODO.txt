@@ -1,2 +1,0 @@
-* consider IE and ID when implementing isntructions
-* check if interrupts are enabled before executing them
