@@ -1,0 +1,3 @@
+This is a GameBoy emulator for Linux.
+
+To compile this project an additional bin, build and dep folders are needed.
