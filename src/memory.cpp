@@ -1,5 +1,7 @@
-#include "memory.h"
+#include "gbmemory.h"
 #include "bootrom.h"
+
+#include <fstream>
 
 Memory* Memory::instance = new Memory();
 

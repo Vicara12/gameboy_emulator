@@ -1,10 +1,9 @@
-#ifndef MEMORY_H_
-#define MEMORY_H_
+#ifndef GBMEMORY_H_
+#define GBMEMORY_H_
 
 #include <cstdint>
-#include <iostream>
-#include <fstream>
 #include <exception>
+#include <iostream>
 
 class Memory
 {

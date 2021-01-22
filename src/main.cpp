@@ -1,5 +1,5 @@
 #include <iostream>
-#include "memory.h"
+#include "gbmemory.h"
 #include "cpu.h"
 using namespace std;
 

@@ -1,7 +1,7 @@
 #ifndef INSTRUCTIONS_H_
 #define INSTRUCTIONS_H_
 
-#include "memory.h"
+#include "gbmemory.h"
 #include <exception>
 #include <cstdint>
 

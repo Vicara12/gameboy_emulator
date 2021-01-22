@@ -1,0 +1,16 @@
+memory.o: memory.cpp memory.h bootrom.h
+
+cpu.o: cpu.cpp cpu.h memory.h
+
+instructions.o: instructions.h instructions.cpp
+
+instruction_set_vec.o: instruction_set_vec.cpp instructions.h arithmetic_instructions.h load_instructions.h\
+ other_instructions.h shift_instructions.h cpu.h
+
+arithmetic_instructions.o: arithmetic_instructions.cpp arithmetic_instructions.h instructions.h
+
+load_instructions.o: load_instructions.cpp load_instructions.h instructions.h
+
+other_instructions.o: other_instructions.cpp other_instructions.h instructions.h
+
+shift_instructions.o: shift_instructions.cpp shift_instructions.h instructions.h

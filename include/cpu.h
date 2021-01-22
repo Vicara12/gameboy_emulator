@@ -3,12 +3,9 @@
 
 #include <cstdint>
 
-#include "memory.h"
+#include "gbmemory.h"
 #include "instructions.h"
-#include "load_instructions.h"
-#include "arithmetic_instructions.h"
-#include "other_instructions.h"
-#include "shift_instructions.h"
+
 
 class CPU
 {

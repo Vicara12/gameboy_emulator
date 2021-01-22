@@ -1,5 +1,9 @@
 
 #include "cpu.h"
+#include "load_instructions.h"
+#include "arithmetic_instructions.h"
+#include "other_instructions.h"
+#include "shift_instructions.h"
 
 void CPU::initInstructionVectors ()
 {
