@@ -20,7 +20,7 @@ Rotate::Rotate (bool right, bool through_c, Memory::Register reg, bool fast_a) :
    else
    {
       Instruction::instr_name_ = ("R" + std::string(right_ ? "R" : "L") +
-                                  (through_c_ ? "C" : "") + "\t" +
+                                  (through_c_ ? "C" : " ") + "   " +
                                   Memory::regString(reg_));
       Instruction::verbose_name_ = ("(rotate register " + Memory::regString(reg_)
                                  + std::string(right_ ? " right" : " left") +
@@ -75,7 +75,7 @@ Shift::Shift (bool right, Memory::Register reg, bool logical) :
 {
    
    Instruction::instr_name_ = ("S" + std::string(right_ ? "R" : "L") +
-                              (logical_ ? "L" : "A") + "\t" +
+                              (logical_ ? "L" : "A") + "   " +
                               Memory::regString(reg_));
    Instruction::verbose_name_ = ("(shift register " + Memory::regString(reg_)
                               + std::string(right_ ? " right" : " left") +
@@ -125,7 +125,7 @@ void Shift::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 
 Swap::Swap (Memory::Register reg) :
       Instruction(2, 2 + 2*Memory::registerIs16bits(reg),
-                  "SWAP \t" + Memory::regString(reg),
+                  "SWAP  " + Memory::regString(reg),
                   "(swap nibbles of register " + Memory::regString(reg) + ")"),
       reg_(reg) {}
 
@@ -161,7 +161,7 @@ void Swap::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 
 Bit::Bit (Memory::Register reg, unsigned bit) :
       Instruction(2, 2 + 2*Memory::registerIs16bits(reg),
-      "BIT \t" + std::to_string(bit) + ", " + Memory::regString(reg),
+      "BIT   " + std::to_string(bit) + ", " + Memory::regString(reg),
       "(set Z flag to bit " + std::to_string(reg) + " of register " +
          Memory::regString(reg) + ")"),
       reg_(reg),
@@ -190,7 +190,7 @@ void Bit::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 
 SetResetBit::SetResetBit (Memory::Register reg, unsigned bit, bool set) :
       Instruction(2, 2 + 2*Memory::registerIs16bits(reg),
-                  (set ? "SET" : "RES") + std::string(" \t") +
+                  (set ? "SET" : "RES") + std::string("   ") +
                   std::to_string(bit) + ", " + Memory::regString(reg),
                   "(" + std::string(set ? "set" : "reset") + " bit " +
                   std::to_string(reg) + " of register " +

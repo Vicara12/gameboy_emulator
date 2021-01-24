@@ -25,6 +25,9 @@ public:
    // displays the entire instruction set and shift subset on screen
    void displayInstructionSet (bool verbose);
 
+   // displays detailed information about the selected instruction
+   void displayInstructionInfo (uint8_t opcode, bool cb_subset, bool verbose);
+
    void disasemble (uint16_t from, uint16_t to, bool verbose) const;
 
    void executeInstruction (uint8_t opcode,

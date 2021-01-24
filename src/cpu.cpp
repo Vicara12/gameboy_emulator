@@ -146,3 +146,29 @@ void CPU::enableCPU ()
    if (memory->cpuStopped())     memory->changeCpuStop(false);
    else if (memory->cpuHalted()) memory->changeCpuHalt(false);
 }
+
+void CPU::displayInstructionInfo (uint8_t opcode, bool cb_subset, bool verbose)
+{
+   // get pointer to instruction
+   Instruction* instruction = (cb_subset ?   CB_subset[opcode] :
+                                             instruction_set[opcode]);
+
+   std::cout << Memory::getHex(opcode);
+
+   if (cb_subset)
+      std::cout << " (CB)";
+
+   // display size and time duration of instruction
+   std::cout << " " << instruction->getByteSize();
+   std::cout << " " << (instruction->getCycleLenght()*4);
+
+   if (instruction->getCycleLenght()*4 < 10)
+      std::cout << " ";
+
+   std::cout << "   " << instruction->name();
+
+   if (verbose)
+      std::cout << "  " << instruction->description();
+   
+   std::cout << std::endl;
+}

@@ -2,7 +2,7 @@
 #include "other_instructions.h"
 
 NOP::NOP () :
-      Instruction(1, 1, "NOP \t", "(no operation instruction)") {}
+      Instruction(1, 1, "NOP   ", "(no operation instruction)") {}
 
 void NOP::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -12,7 +12,7 @@ void NOP::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 // ~~~~~~~~~~~~~~~~~
 
 Halt::Halt () :
-      Instruction(1, 1, "HALT \t", "(stop CPU until an interrupt is received)") {}
+      Instruction(1, 1, "HALT  ", "(stop CPU until an interrupt is received)") {}
 
 void Halt::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -22,7 +22,7 @@ void Halt::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 // ~~~~~~~~~~~~~~~~~
 
 Stop::Stop () :
-      Instruction(1, 1, "STOP \t", "(stop CPU until a joypad input)") {}
+      Instruction(1, 1, "STOP  ", "(stop CPU until a joypad input)") {}
 
 void Stop::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -32,7 +32,7 @@ void Stop::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 // ~~~~~~~~~~~~~~~~~
 
 InterruptionED::InterruptionED (bool enable) :
-      Instruction(1, 1, (enable ? "EI" : "DI") + std::string(" \t"),
+      Instruction(1, 1, (enable ? "EI" : "DI") + std::string("    "),
                   "(" + std::string(enable ? "enable" : "disable") + " interrupts)"),
       enable_(enable) {}
 
@@ -48,7 +48,8 @@ void InterruptionED::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 
 JumpCall::JumpCall (bool call, bool relative, Source source, Type type) :
       Instruction(1 + (source == r8) + 2*(source == a16),
-                  call ? 3 : 1 + (source == r8) + 2*(source == a16), "", ""),
+                  call ? 3 : 1 + (type == INCONDITIONAL) +
+                     (source == r8) + 2*(source == a16), "", ""),
       call_(call),
       relative_(relative),
       alternative_path_taken(false),
@@ -56,13 +57,22 @@ JumpCall::JumpCall (bool call, bool relative, Source source, Type type) :
       source_(source),
       type_(type)
 {
+   // take into consideration two edge cases for the instruction time lenght
+   // instructions 0xe9 and 0xcd
+   if (call and type == INCONDITIONAL and source == a16)
+      instr_cycles = 6;
+
+   if (not call and type == INCONDITIONAL and source == HL)
+      instr_cycles = 1;
+
+
    std::string source_str, type_str, src_str, tp_str;
 
    switch (source_)
    {
       case r8: {source_str = "r8"; src_str = "r8"; break;}
       case a16: {source_str = "a16"; src_str = "a16"; break;}
-      case HL: {source_str = "16bit value stored at addres HL"; src_str = "HL"; break;}
+      case HL: {source_str = "16bit value stored at addres HL"; src_str = "(HL)"; break;}
    }
 
    switch (type_)
@@ -76,14 +86,17 @@ JumpCall::JumpCall (bool call, bool relative, Source source, Type type) :
 
    if (call)
    {
-      Instruction::instr_name_ = "CALL \t" + tp_str + ", " + src_str;
+      Instruction::instr_name_ = "CALL  " +
+                                 (type == INCONDITIONAL ? "" : tp_str + ", ") +
+                                 src_str;
       Instruction::verbose_name_ = "(save PC in stack and set it to "
                                    + source_str + " if " + source_str + ")";
    }
    else
    {
-      Instruction::instr_name_ = (relative ? "JR" : "JP") + std::string(" \t") +
-                                 tp_str + ", " + src_str;
+      Instruction::instr_name_ = (relative ? "JR" : "JP") + std::string("    ") +
+                                 (type == INCONDITIONAL ? "" : tp_str + ", ")
+                                 + src_str;
       Instruction::verbose_name_ = std::string("(") + 
                                  (relative ? "add to PC the value" : "set PC") +
                                  " at address " + source_str + " if " +
@@ -151,7 +164,7 @@ bool JumpCall::longPathTaken () const
 // ~~~~~~~~~~~~~~~~~
 
 Return::Return (bool reti, Source source, Type type) :
-      Instruction(1, 2, "", ""),
+      Instruction(1, 2 + 2*(type == INCONDITIONAL), "", ""),
       reti_(reti),
       jump(false),
       jump_cpu_cycles(type == INCONDITIONAL ? 16 : 20),
@@ -162,14 +175,14 @@ Return::Return (bool reti, Source source, Type type) :
 
    switch (source_)
    {
-      case _00H: {source_str = "0x00"; break;}
-      case _08H: {source_str = "0x08"; break;}
-      case _10H: {source_str = "0x10"; break;}
-      case _18H: {source_str = "0x18"; break;}
-      case _20H: {source_str = "0x20"; break;}
-      case _28H: {source_str = "0x28"; break;}
-      case _30H: {source_str = "0x30"; break;}
-      case _38H: {source_str = "0x30"; break;}
+      case _00H: {source_str = "00H"; break;}
+      case _08H: {source_str = "08H"; break;}
+      case _10H: {source_str = "10H"; break;}
+      case _18H: {source_str = "18H"; break;}
+      case _20H: {source_str = "20H"; break;}
+      case _28H: {source_str = "28H"; break;}
+      case _30H: {source_str = "30H"; break;}
+      case _38H: {source_str = "30H"; break;}
       case   SP: {source_str = "SP";   break;}
    }
 
@@ -184,22 +197,22 @@ Return::Return (bool reti, Source source, Type type) :
 
    if (reti_)
    {
-      Instruction::instr_name_ = "RETI \t";
+      Instruction::instr_name_ = "RETI  ";
       Instruction::verbose_name_ = "(pop PC from the stack and activate interrupts)";
    }
    else if (type_ == INCONDITIONAL and source_ == SP)
    {
-      Instruction::instr_name_ = "RET \t";
+      Instruction::instr_name_ = "RET   ";
       Instruction::verbose_name_ = "(pop PC from stack)";
    }
    else if (type_ == INCONDITIONAL)
    {
-      Instruction::instr_name_ = "RST \t" + source_str;
+      Instruction::instr_name_ = "RST   " + source_str;
       Instruction::verbose_name_ = "(set PC to address "+ source_str +")";
    }
    else
    {
-      Instruction::instr_name_ = "RET \t" + cond_str;
+      Instruction::instr_name_ = "RET   " + cond_str;
       Instruction::verbose_name_ = "(pop PC from stack if " + type_str + ")";
    }
 }
