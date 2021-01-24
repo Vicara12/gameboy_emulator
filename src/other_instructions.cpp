@@ -167,7 +167,7 @@ Return::Return (bool reti, Source source, Type type) :
       Instruction(1, 2 + 2*(type == INCONDITIONAL), "", ""),
       reti_(reti),
       jump(false),
-      jump_cpu_cycles(type == INCONDITIONAL ? 16 : 20),
+      jump_cpu_cycles(type == INCONDITIONAL ? 4 : 5),
       source_(source),
       type_(type)
 {

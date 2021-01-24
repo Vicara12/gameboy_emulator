@@ -56,15 +56,24 @@ void Memory::loadROM (std::string rom_file_name)
       internal_mem[i] = main_ROM_content[i];
 }
 
-std::string Memory::getHex (int n)
+std::string Memory::getHex (int n, int min_size)
 {
    char buff[32];
    buff[0] = '0';
    buff[1] = 'x';
    int lenght = 2;
 
-   if (n == 0) return "0x00";
+   // if the number is 0, fill the string with zeros
+   if (n == 0)
+   {
+      for (int i = 0; i < min_size; i++)
+         buff[2+i] = '0';
+      
+      buff[3+min_size] = 0;
+      return std::string(buff);
+   }
 
+   // write the numbers backwards
    while (n > 0)
    {
       int digit = n%16;
@@ -76,7 +85,8 @@ std::string Memory::getHex (int n)
       lenght++;
    }
 
-   if (lenght == 3)
+   // add all the necessary zeros
+   while (lenght < min_size+2)
    {
       buff[lenght] = '0';
       lenght++;
@@ -84,7 +94,6 @@ std::string Memory::getHex (int n)
 
    for (int i = 2; i < 2 + (lenght-2)/2; i++)
    {
-      //std::cout << "swap" << i << " " << lenght - i + 1 << std::endl;
       char temp = buff[i];
       buff[i] = buff[lenght - i + 1];
       buff[lenght - i + 1] = temp;
@@ -275,4 +284,40 @@ std::string Memory::flagString (Flag flag)
    }
 
    return "???";
+}
+
+void Memory::outputMemoryStatus (bool verbose) const
+{
+   if (verbose)
+   {
+      std::cout << "- Debug mode:  " << (debug_mode ? "on" : "off") << "\n";
+      std::cout << "- Debug flags: " << (debug_flags_regs ? "on" :
+                                                            "off") << "\n";
+      std::cout << "- CPU halted:  " << (cpu_halted ? "yes" : "no") << "\n";
+      std::cout << "- CPU stopped: " << (cpu_halted ? "yes" : "no") << "\n";
+      std::cout << "- CPU int:     " << (cpu_halted ? "enabled" :
+                                                      "disabled") << "\n";
+   }
+   std::cout << "Flags: Z(" << ((reg_af & 0x80) != 0) <<
+                ") N(" << ((reg_af & 0x40) != 0) <<
+                ") H(" << ((reg_af & 0x20) != 0) <<
+                ") C(" << ((reg_af & 0x10) != 0) << ")" << std::endl;
+   std::cout << "A: " << getHex(readReg(Register::A, true)) << "    ";
+   std::cout << "F: " << getHex(readReg(Register::F, true)) << std::endl;
+   std::cout << "B: " << getHex(readReg(Register::B, true)) << "    ";
+   std::cout << "C: " << getHex(readReg(Register::C, true)) << std::endl;
+   std::cout << "D: " << getHex(readReg(Register::D, true)) << "    ";
+   std::cout << "E: " << getHex(readReg(Register::E, true)) << std::endl;
+   std::cout << "H: " << getHex(readReg(Register::H, true)) << "    ";
+   std::cout << "L: " << getHex(readReg(Register::L, true)) << std::endl;
+   std::cout << "(HL): " << getHex(internal_mem[reg_hl]) << std::endl;
+   std::cout << "PC:   " << getHex(reg_pc, 4) << std::endl;
+   std::cout << "SP:   " << getHex(reg_sp, 4) << std::endl;
+}
+
+void Memory::displayMemoryChunk (int from, int to) const
+{
+   for (int i = from; i < to; i++)
+      std::cout << "[" << getHex(i) << "] = " <<
+                   getHex(internal_mem[i]) << std::endl;
 }

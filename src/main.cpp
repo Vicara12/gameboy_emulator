@@ -7,14 +7,15 @@ int main ()
 {
    CPU cpu;
 
-   //cpu.displayInstructionInfo(0x02, false, false);
-   for (int j = 0; j < 0x10; j++)
-   {
-      for (int i = 0; i < 0x100; i+= 0x10)
-      {
-         int n = (i | j);
-         cpu.displayInstructionInfo(n, false, false);
-      }
-      std::cout << "~~~~~~~~~~~" << std::endl;
-   }
+   cout << endl;
+
+   Memory::getInstance()->writeReg(Memory::Register::A, 0xffff);
+
+   Memory::getInstance()->writeFlag(Memory::Flag::C_f, true);
+
+   Memory::getInstance()->displayMemoryChunk(0, 0x100);
+
+   cout << endl;
+
+   Memory::getInstance()->outputMemoryStatus(false);
 }

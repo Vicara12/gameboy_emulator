@@ -14,7 +14,7 @@ public:
   enum InterruptionStatusChange {ENABLE, DISABLE, NONE};
 
   // returns a string with the number in hexadecimal, mainly for debugging
-  static std::string getHex (int n);
+  static std::string getHex (int n, int min_size = 2);
 
   // returns a string with the letter of the register
   static std::string regString (Register reg, bool pointer = true);
@@ -59,6 +59,12 @@ public:
   // (useful because EI and DI instructions take action in the next instruction)
   InterruptionStatusChange checkInterruptChange () const;
   void changeInterruptChange (InterruptionStatusChange new_status);
+
+  // displays all the registers
+  void outputMemoryStatus (bool verbose = false) const;
+
+  // displays the values in the internal memory (not including the value in "to")
+  void displayMemoryChunk (int from, int to) const;
 
 private:
 

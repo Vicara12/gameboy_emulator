@@ -23,10 +23,12 @@ public:
                          bool display_registers = false);
 
    // displays the entire instruction set and shift subset on screen
-   void displayInstructionSet (bool verbose);
+   void displayInstructionSet (bool verbose) const;
 
    // displays detailed information about the selected instruction
-   void displayInstructionInfo (uint8_t opcode, bool cb_subset, bool verbose);
+   void displayInstructionInfo (uint8_t opcode,
+                                bool cb_subset,
+                                bool verbose) const;
 
    void disasemble (uint16_t from, uint16_t to, bool verbose) const;
 

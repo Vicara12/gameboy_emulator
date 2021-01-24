@@ -187,7 +187,7 @@ void CompAAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 
 ChangeCFlagAI::ChangeCFlagAI (bool complement) :
       Instruction(1, 1, (complement ? "CCF   " : "SCF   "),
-                  "(" + std::string(complement ? "flip" : "set") + "carry flag)"),
+                  "(" + std::string(complement ? "flip" : "set") + " carry flag)"),
       complement_ (complement) {}
 
 void ChangeCFlagAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)

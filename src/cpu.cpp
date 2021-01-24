@@ -21,22 +21,15 @@ void CPU::changeDebugMode (bool enable,
    verbose_debug = verbose;
 }
 
-void CPU::displayInstructionSet (bool verbose)
+void CPU::displayInstructionSet (bool verbose) const
 {
-   for (int i = 0; i < 0x100; i++)
-   {
-      std::cout << Memory::getHex(i) << "  " << instruction_set[i]->name();
-      if (verbose) std::cout << "\t" << instruction_set[i]->description();
-      std::cout << std::endl;
-   }
 
-   std::cout << "\n\n";
-
-   for (int i = 0; i < 0x100; i++)
+   for (int i = 0; i < 0x200; i++)
    {
-      std::cout << Memory::getHex(i) << "  " << CB_subset[i]->name();
-      if (verbose) std::cout << "\t" << CB_subset[i]->description();
-      std::cout << std::endl;
+      displayInstructionInfo(i%0x100, i>0xff, verbose);
+
+      if (i == 0xff)
+         std::cout << "\n\n";
    }
 }
 
@@ -147,7 +140,9 @@ void CPU::enableCPU ()
    else if (memory->cpuHalted()) memory->changeCpuHalt(false);
 }
 
-void CPU::displayInstructionInfo (uint8_t opcode, bool cb_subset, bool verbose)
+void CPU::displayInstructionInfo (uint8_t opcode,
+                                  bool cb_subset,
+                                  bool verbose) const
 {
    // get pointer to instruction
    Instruction* instruction = (cb_subset ?   CB_subset[opcode] :
@@ -156,19 +151,33 @@ void CPU::displayInstructionInfo (uint8_t opcode, bool cb_subset, bool verbose)
    std::cout << Memory::getHex(opcode);
 
    if (cb_subset)
-      std::cout << " (CB)";
-
-   // display size and time duration of instruction
-   std::cout << " " << instruction->getByteSize();
-   std::cout << " " << (instruction->getCycleLenght()*4);
-
-   if (instruction->getCycleLenght()*4 < 10)
+      std::cout << "*";
+   else
       std::cout << " ";
 
-   std::cout << "   " << instruction->name();
+   // display size and time duration of instruction
+   std::cout << " " << instruction->getByteSize() << " ";
+
+   // if instruction has multiple cycle lenghts, display it
+   if (instruction->extraCycleTime() != 0 and
+       instruction->extraCycleTime() != instruction->getCycleLenght())
+      std::cout << (instruction->extraCycleTime()*4) << "/";
+
+   std::cout << (instruction->getCycleLenght()*4);
+
+   // output spaces for formatting purposes
+   if (instruction->extraCycleTime() == 0 or
+       instruction->extraCycleTime() == instruction->getCycleLenght())
+      std::cout << "   ";
+   if (instruction->getCycleLenght()*4 < 10)
+      std::cout << " ";
+   if (instruction->extraCycleTime() < 10)
+      std::cout << " ";
+
+   std::cout << " " << instruction->name();
 
    if (verbose)
-      std::cout << "  " << instruction->description();
+      std::cout << " \t" << instruction->description();
    
    std::cout << std::endl;
 }
