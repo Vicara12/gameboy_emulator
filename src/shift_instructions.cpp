@@ -45,24 +45,25 @@ void Rotate::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
    // opposite bit: bit 0 if rotate left and bit 7 if rotate right
 
    // save opposite bit in case through_c is active
-   bool bit = ((val & (right_ ? 0x80 : 0x01)) != 0);
+   bool bit = ((val & (right_ ? 0x01 : 0x80)) != 0);
    bool flag = memory->readFlag(Memory::Flag::C_f);
-
-   // if through_c, actualize flag with the new bit
-   memory->writeFlag(Memory::Flag::C_f, bit);
 
    if (right_) val = val >> 1;
    else        val = val << 1;
 
    // if through_c, set opposite bit to carry flag or shifted bit
-   if ((flag and through_c_) or (not flag and bit))
-      val = val & (right_ ? 0x80 : 0x01);
+   if ((flag and through_c_) or (bit and not through_c_))
+      val = val ^ (right_ ? 0x80 : 0x01);
 
    // save value
    if (Memory::registerIs16bits(reg_))
       memory->writeMem(memory->readReg(reg_), val);
    else
       memory->writeReg(reg_, val);
+
+   // if through_c, actualize flag with the new bit
+   if (through_c_)
+      memory->writeFlag(Memory::Flag::C_f, bit);
 }
 
 // ~~~~~~~~~~~~~~~~~
@@ -95,30 +96,26 @@ void Shift::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
    else
       val = memory->readReg(reg_);
 
-   // opposite bit: bit 0 if rotate left and bit 7 if rotate right
+   // opposite bit: bit 0 if shift left and bit 7 if shift right
 
-   // save opposite bit in case through_c is active
-   bool bit = ((val & (right_ ? 0x80 : 0x01)) != 0);
-   bool flag = memory->readFlag(Memory::Flag::C_f);
+   // save opposite bit for carry
+   bool bit = ((val & (right_ ? 0x01 : 0x80)) != 0);
 
-   // if through_c, actualize flag with the new bit
-   memory->writeFlag(Memory::Flag::C_f, bit);
-
-   if (right_) val = val >> 1;
+   if (right_) val = (logical_ ? val >> 1 : (int8_t(val) >> 1));
    else        val = val << 1;
-
-   // if shift right arithmetic and bit 7 was an 1, set it again
-   if (right_ and bit and not logical_)
-      val = val & 0x80;
 
    // save value
    if (Memory::registerIs16bits(reg_))
       memory->writeMem(memory->readReg(reg_), val);
    else
       memory->writeReg(reg_, val);
-   
-   // write flag
-   memory->writeFlag(Memory::Flag::C_f, flag);
+
+   // actualize flag with the new bit
+   memory->writeFlag(Memory::Flag::C_f, bit);
+   // actualize other flags
+   memory->writeFlag(Memory::Flag::Z_f, (val == 0));
+   memory->writeFlag(Memory::Flag::N_f, 0);
+   memory->writeFlag(Memory::Flag::H_f, 0);
 }
 
 // ~~~~~~~~~~~~~~~~~

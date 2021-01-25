@@ -85,8 +85,6 @@ void CPU::executeInstruction (uint8_t opcode,
    // check if CPU is halted or stopped
    if (not ignore_CPU_disable and (memory->cpuHalted() or memory->cpuStopped()))
    {
-      clock++;
-
       if (debug_mode)
       {
          std::cout << "cpu is ";
@@ -120,9 +118,7 @@ void CPU::executeInstruction (uint8_t opcode,
    {
       std::cout << "clk : " << clock << std::endl;
       std::cout << (CB ? "exCB: " : "ex:   ");
-      std::cout << Memory::getHex(opcode) << "  ";
-      std::cout << instruction->name();
-      if (verbose_debug) std::cout << "\t" << instruction->description() << "\n";
+      displayInstructionInfo(opcode, CB, verbose_debug);
    }
 
    instruction->execute(first_byte, second_byte);
@@ -180,4 +176,9 @@ void CPU::displayInstructionInfo (uint8_t opcode,
       std::cout << " \t" << instruction->description();
    
    std::cout << std::endl;
+}
+
+unsigned long CPU::getCLK () const
+{
+   return clock;
 }

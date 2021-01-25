@@ -31,10 +31,11 @@ void NormalLD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
    if (immediate_8bit_)
       written_val = inst_first_byte;
    else if (Memory::registerIs16bits(reg_r))
-      written_val = memory->readMem(reg_r);
+      written_val = memory->readMem(memory->readReg(reg_r));
    else
       written_val = memory->readReg(reg_r);
    
+      
    // select write to memory or to register
    if (Memory::registerIs16bits(reg_w))
       memory->writeMem(memory->readReg(reg_w), written_val);
@@ -70,7 +71,17 @@ void DoubleByteLD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
    Memory::Register r = reg_a ? Memory::Register::A : Memory::Register::SP;
 
    if (reg_read)
-      memory->writeMem(address, memory->readReg(r));
+   {
+      // if SP is written to memory, writte LB at SP address and UB to address+1
+      if (not reg_a)
+      {
+         uint16_t val = memory->readReg(r);
+         memory->writeMem(address,   uint8_t(val));      // LB
+         memory->writeMem(address+1, uint8_t(val >> 8)); // UB
+      }
+      else
+         memory->writeMem(address, memory->readReg(r));
+   }
    else
       memory->writeReg(r, memory->readMem(address));
 }

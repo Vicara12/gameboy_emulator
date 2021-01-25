@@ -13,7 +13,10 @@ void IncAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
                            memory->readMem(memory->readReg(reg_)) :
                            memory->readReg(reg_);
 
-   memory->writeReg(reg_, ++reg_val);
+   if (Memory::registerIs16bits(reg_))
+      memory->writeMem(memory->readReg(reg_, true), ++reg_val);
+   else
+      memory->writeReg(reg_, ++reg_val);
 
    // write flags
    memory->writeFlag(Memory::Flag::Z_f, reg_val == 0);
@@ -34,7 +37,11 @@ void DecAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
    uint8_t reg_val = Memory::registerIs16bits(reg_) ?
                            memory->readMem(memory->readReg(reg_)) :
                            memory->readReg(reg_);
-   memory->writeReg(reg_, --reg_val);
+   
+   if (Memory::registerIs16bits(reg_))
+      memory->writeMem(memory->readReg(reg_, true), --reg_val);
+   else
+      memory->writeReg(reg_, --reg_val);
 
    // write flags
    memory->writeFlag(Memory::Flag::Z_f, reg_val == 0);
@@ -194,7 +201,7 @@ void ChangeCFlagAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    bool c_flag = memory->readFlag(Memory::Flag::C_f);
 
-   memory->writeReg(Memory::Register::A, complement_ ? not c_flag : true);
+   memory->writeFlag(Memory::Flag::C_f, complement_ ? not c_flag : true);
    memory->writeFlag(Memory::Flag::N_f, 0);
    memory->writeFlag(Memory::Flag::H_f, 0);
 }
@@ -212,7 +219,7 @@ void IncDec16BitAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint16_t reg = memory->readReg(reg_);
 
-   memory->writeReg(reg_, inc_ ? reg++ : reg--);
+   memory->writeReg(reg_, inc_ ? ++reg : --reg);
 }
 
 // ~~~~~~~~~~~~~~~~~

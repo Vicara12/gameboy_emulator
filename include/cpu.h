@@ -41,6 +41,8 @@ public:
    // disable halt or stop
    void enableCPU();
 
+   unsigned long getCLK () const;
+
 private:
 
    void initInstructionVectors ();

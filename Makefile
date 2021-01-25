@@ -34,8 +34,5 @@ build/%.o: src/%.cpp
 clean:
 	rm ./bin/* ./build/* ./dep/*
 
-git:
-	git add *.cpp *.h bootrom.txt Makefile
-
 count:
-	git ls-files | xargs wc -l
+	wc Makefile ./src/* ./include/*

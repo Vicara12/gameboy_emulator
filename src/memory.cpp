@@ -294,10 +294,11 @@ void Memory::outputMemoryStatus (bool verbose) const
       std::cout << "- Debug flags: " << (debug_flags_regs ? "on" :
                                                             "off") << "\n";
       std::cout << "- CPU halted:  " << (cpu_halted ? "yes" : "no") << "\n";
-      std::cout << "- CPU stopped: " << (cpu_halted ? "yes" : "no") << "\n";
-      std::cout << "- CPU int:     " << (cpu_halted ? "enabled" :
-                                                      "disabled") << "\n";
+      std::cout << "- CPU stopped: " << (cpu_stopped ? "yes" : "no") << "\n";
+      std::cout << "- CPU int:     " << (cpu_int_enabled ? "enabled" :
+                                                            "disabled") << "\n";
    }
+
    std::cout << "Flags: Z(" << ((reg_af & 0x80) != 0) <<
                 ") N(" << ((reg_af & 0x40) != 0) <<
                 ") H(" << ((reg_af & 0x20) != 0) <<
@@ -318,6 +319,6 @@ void Memory::outputMemoryStatus (bool verbose) const
 void Memory::displayMemoryChunk (int from, int to) const
 {
    for (int i = from; i < to; i++)
-      std::cout << "[" << getHex(i) << "] = " <<
+      std::cout << "[" << getHex(i, 4) << "] = " <<
                    getHex(internal_mem[i]) << std::endl;
 }
