@@ -25,20 +25,35 @@ NormalLD::NormalLD (Memory::Register reg_write,
 
 void NormalLD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
-   uint8_t written_val;
+   uint8_t written_val = 0;
+   uint16_t written_val_0xf9 = 0;
+
+   // special case, instruction 0xf9
+   bool instr_0xf9 = (reg_r == Memory::Register::HL and
+                      reg_w == Memory::Register::SP);
 
    // select the source of the data to be written
    if (immediate_8bit_)
       written_val = inst_first_byte;
    else if (Memory::registerIs16bits(reg_r))
-      written_val = memory->readMem(memory->readReg(reg_r));
+   {
+      if (instr_0xf9)
+         written_val_0xf9 = memory->readReg(reg_r);
+      else
+         written_val = memory->readMem(memory->readReg(reg_r));
+   }
    else
       written_val = memory->readReg(reg_r);
    
       
    // select write to memory or to register
    if (Memory::registerIs16bits(reg_w))
-      memory->writeMem(memory->readReg(reg_w), written_val);
+   {
+      if (instr_0xf9)
+         memory->writeReg(reg_w, written_val_0xf9);
+      else
+         memory->writeMem(memory->readReg(reg_w), written_val);
+   }
    else
       memory->writeReg(reg_w, written_val);
 }
@@ -174,21 +189,21 @@ InstructionF8LD::InstructionF8LD () :
 
 void InstructionF8LD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
-   memory->writeFlag(Memory::Flag::Z_f, false);
-   memory->writeFlag(Memory::Flag::N_f, false);
+   uint16_t sp = memory->readReg(Memory::Register::SP);
+   int8_t r8 = int8_t(inst_first_byte);
 
-   uint16_t prev_sp_val = memory->readReg(Memory::Register::SP);
-   uint16_t value = memory->readReg(Memory::Register::SP) +
-                                                      int8_t(inst_first_byte);
+   memory->writeReg(Memory::Register::HL, sp + r8);
+   memory->writeFlag(Memory::Flag::Z_f, 0);
+   memory->writeFlag(Memory::Flag::N_f, 0);
 
-   bool c_flag;
-   if (int8_t(inst_first_byte) > 0) c_flag = (prev_sp_val > value);
-   else                             c_flag = (prev_sp_val < value);
+   bool h_flag;
+   if (r8 < 0)
+      h_flag = (int(sp & 0x0fff) + r8 < 0);
+   else
+      h_flag = ((sp & 0x0fff) + r8 > 0x0fff);
+   memory->writeFlag(Memory::Flag::H_f, h_flag);
 
-   memory->writeReg(Memory::Register::HL, value);
-   memory->writeFlag(Memory::Flag::H_f,
-                     (prev_sp_val & 0xff00) != (value & 0xff00));
-   memory->writeFlag(Memory::Flag::C_f, c_flag);
+   memory->writeFlag(Memory::Flag::C_f, uint32_t(int(sp) + r8) & 0xffff0000);
 }
 
 // ~~~~~~~~~~~~~~~~~
@@ -203,8 +218,8 @@ void PushLD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
    uint16_t sp = memory->readReg(Memory::Register::SP);
    uint16_t value = memory->readReg(reg_);
 
-   memory->writeMem(sp--, value >> 8);
-   memory->writeMem(sp--, value & 0x00ff);
+   memory->writeMem(--sp, value >> 8);
+   memory->writeMem(--sp, value & 0x00ff);
 
    memory->writeReg(Memory::Register::SP, sp);
 }

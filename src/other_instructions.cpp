@@ -182,7 +182,7 @@ Return::Return (bool reti, Source source, Type type) :
       case _20H: {source_str = "20H"; break;}
       case _28H: {source_str = "28H"; break;}
       case _30H: {source_str = "30H"; break;}
-      case _38H: {source_str = "30H"; break;}
+      case _38H: {source_str = "38H"; break;}
       case   SP: {source_str = "SP";   break;}
    }
 
@@ -256,6 +256,18 @@ void Return::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 
             memory->writeReg(Memory::Register::SP, sp);
          }
+      }
+
+      // if RST instruction, save PC into stack
+      if (source_ != SP)
+      {
+         uint16_t sp = memory->readReg(Memory::Register::SP);
+         uint16_t pc = memory->readReg(Memory::Register::PC);
+
+         memory->writeMem(--sp, (pc >> 8));
+         memory->writeMem(--sp, pc);
+
+         memory->writeReg(Memory::Register::SP, sp);
       }
 
       memory->writeReg(Memory::Register::PC, address);

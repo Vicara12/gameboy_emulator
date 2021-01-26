@@ -3,9 +3,9 @@
 #include "cpu.h"
 using namespace std;
 
-#define INSTRUCTION  0xf3
-#define MEM_FROM     0xff00
-#define MEM_TO       0xff20
+#define INSTRUCTION  0xcf
+#define MEM_FROM     0x0100
+#define MEM_TO       0x010a
 
 int main ()
 {
@@ -14,22 +14,24 @@ int main ()
 
    cout << endl;
 
-   memory->writeReg(Memory::Register::PC, 0x0100);
+   memory->writeReg(Memory::Register::PC, 0x010a);
 
-   memory->writeReg(Memory::Register::C, 0x12);
-   memory->writeReg(Memory::Register::A, 0x04);
+   memory->writeReg(Memory::Register::HL, 0x0107);
+   memory->writeReg(Memory::Register::A, 0x42);
 
-   memory->writeReg(Memory::Register::SP, 0x0102);
+   memory->writeReg(Memory::Register::SP, 0x0105);
+
+   memory->changeIntEnabled(false);
 
 
    for (int i = MEM_FROM; i < MEM_TO; i++)
       memory->writeMem(i, (i*3)%0x100);
 
 
-   memory->writeFlag(Memory::Flag::N_f, true);
-   memory->writeFlag(Memory::Flag::C_f, true);
-   memory->writeFlag(Memory::Flag::Z_f, true);
-   memory->writeFlag(Memory::Flag::H_f, true);
+   memory->writeFlag(Memory::Flag::N_f, false);
+   memory->writeFlag(Memory::Flag::C_f, false);
+   memory->writeFlag(Memory::Flag::Z_f, false);
+   memory->writeFlag(Memory::Flag::H_f, false);
 
    memory->displayMemoryChunk(MEM_FROM, MEM_TO);
 
@@ -40,7 +42,9 @@ int main ()
 
    cout << endl;
 
-   cpu.executeInstruction(INSTRUCTION, 0x0a, 0x42, false, false);
+   cpu.executeInstruction(INSTRUCTION, 0x34, 0x12, false, false);
+
+   //cpu.executeInstruction(0x00, 0, 0, false, false);
 
    cout << endl;
 

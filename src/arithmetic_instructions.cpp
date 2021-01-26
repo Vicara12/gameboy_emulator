@@ -120,7 +120,7 @@ void ArithmeticOperationAI::execute (uint8_t inst_first_byte, uint8_t inst_secon
    memory->writeFlag(Memory::Flag::Z_f, reg_a == 0);
    memory->writeFlag(Memory::Flag::N_f, op_ == SUB or op_ == SBC or op_ == CP);
    
-   
+
    bool h_flag;
    if (op_ == AND)
       h_flag = true;
@@ -258,6 +258,13 @@ void ADDr8SPAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
    memory->writeReg(Memory::Register::SP, sp + r8);
    memory->writeFlag(Memory::Flag::Z_f, 0);
    memory->writeFlag(Memory::Flag::N_f, 0);
-   memory->writeFlag(Memory::Flag::H_f, ((sp & 0xff) + r8) > 0xff);
-   memory->writeFlag(Memory::Flag::C_f, int(sp) + r8 > 0xffff);
+
+   bool h_flag;
+   if (r8 < 0)
+      h_flag = (int(sp & 0x0fff) + r8 < 0);
+   else
+      h_flag = ((sp & 0x0fff) + r8 > 0x0fff);
+   memory->writeFlag(Memory::Flag::H_f, h_flag);
+
+   memory->writeFlag(Memory::Flag::C_f, uint32_t(int(sp) + r8) & 0xffff0000);
 }

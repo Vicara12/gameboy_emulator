@@ -56,7 +56,7 @@ void Memory::loadROM (std::string rom_file_name)
       internal_mem[i] = main_ROM_content[i];
 }
 
-std::string Memory::getHex (int n, int min_size)
+std::string Memory::getHex (unsigned n, int min_size)
 {
    char buff[32];
    buff[0] = '0';
@@ -69,7 +69,7 @@ std::string Memory::getHex (int n, int min_size)
       for (int i = 0; i < min_size; i++)
          buff[2+i] = '0';
       
-      buff[3+min_size] = 0;
+      buff[2+min_size] = 0;
       return std::string(buff);
    }
 

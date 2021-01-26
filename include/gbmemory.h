@@ -14,7 +14,7 @@ public:
   enum InterruptionStatusChange {ENABLE, DISABLE, NONE};
 
   // returns a string with the number in hexadecimal, mainly for debugging
-  static std::string getHex (int n, int min_size = 2);
+  static std::string getHex (unsigned n, int min_size = 2);
 
   // returns a string with the letter of the register
   static std::string regString (Register reg, bool pointer = true);
