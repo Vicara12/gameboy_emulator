@@ -219,8 +219,8 @@ PopLD::PopLD (Memory::Register reg) :
 void PopLD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint16_t sp = memory->readReg(Memory::Register::SP);
-   uint16_t value = memory->readMem(++sp);
-   value = (memory->readMem(++sp) << 8) | value;
+   uint16_t value = memory->readMem(sp++);
+   value = (memory->readMem(sp++) << 8) | value;
 
    memory->writeReg(reg_, value);
    memory->writeReg(Memory::Register::SP, sp);

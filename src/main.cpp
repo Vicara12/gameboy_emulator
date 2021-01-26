@@ -3,9 +3,9 @@
 #include "cpu.h"
 using namespace std;
 
-#define INSTRUCTION  0xf6
-#define MEM_FROM     0x100
-#define MEM_TO       0x10a
+#define INSTRUCTION  0xf3
+#define MEM_FROM     0xff00
+#define MEM_TO       0xff20
 
 int main ()
 {
@@ -16,16 +16,15 @@ int main ()
 
    memory->writeReg(Memory::Register::PC, 0x0100);
 
-   memory->writeReg(Memory::Register::B, 0x00);
-   memory->writeReg(Memory::Register::E, 0x42);
+   memory->writeReg(Memory::Register::C, 0x12);
+   memory->writeReg(Memory::Register::A, 0x04);
 
-   memory->writeReg(Memory::Register::HL, 0x0105);
+   memory->writeReg(Memory::Register::SP, 0x0102);
 
-/*
-   for (int i = 0x50; i < 0x200; i++)
-      memory->writeMem(i, i+0x11);
-*/
-   memory->writeMem(0x105, 0x00);
+
+   for (int i = MEM_FROM; i < MEM_TO; i++)
+      memory->writeMem(i, (i*3)%0x100);
+
 
    memory->writeFlag(Memory::Flag::N_f, true);
    memory->writeFlag(Memory::Flag::C_f, true);
@@ -41,7 +40,7 @@ int main ()
 
    cout << endl;
 
-   cpu.executeInstruction(INSTRUCTION, 0xfe, 0x01, true, false);
+   cpu.executeInstruction(INSTRUCTION, 0x0a, 0x42, false, false);
 
    cout << endl;
 

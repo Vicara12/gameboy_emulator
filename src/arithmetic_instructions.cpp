@@ -120,22 +120,26 @@ void ArithmeticOperationAI::execute (uint8_t inst_first_byte, uint8_t inst_secon
    memory->writeFlag(Memory::Flag::Z_f, reg_a == 0);
    memory->writeFlag(Memory::Flag::N_f, op_ == SUB or op_ == SBC or op_ == CP);
    
+   
    bool h_flag;
    if (op_ == AND)
       h_flag = true;
    else if (op_ == XOR or op_ == OR)
       h_flag = false;
    else if (op_ == SUB or op_ == SBC or op_ == CP)
-      h_flag = ((reg_a & 0x0f) - (value & 0x0f) - (op_ == SBC)) > 0x0f;
+      h_flag = unsigned((original_reg_a & 0x0f) - (value & 0x0f) -
+                  (op_ == SBC and carry)) > 0x0f;
    else
-      h_flag = ((reg_a & 0x0f) + (value & 0x0f) + (op_ == ADC)) > 0x0f;
+      h_flag = ((original_reg_a & 0x0f) + (value & 0x0f) +
+                  (op_ == ADC and carry)) > 0x0f;
    memory->writeFlag(Memory::Flag::H_f, h_flag);
+
 
    bool c_flag = false;
    if (op_ == SUB or op_ == SBC or op_ == CP)
-      h_flag = reg_a > original_reg_a;
+      c_flag = reg_a > original_reg_a;
    else if (op_ == ADD or op_ == ADC)
-      h_flag = reg_a < original_reg_a;
+      c_flag = reg_a < original_reg_a;
    memory->writeFlag(Memory::Flag::C_f, c_flag);
 }
 
