@@ -42,7 +42,7 @@ int main ()
 
    cout << endl;
 
-   cpu.executeInstruction(INSTRUCTION, 0x34, 0x12, false, false);
+   //cpu.executeInstruction(INSTRUCTION, 0x34, 0x12, false, false);
 
    //cpu.executeInstruction(0x00, 0, 0, false, false);
 

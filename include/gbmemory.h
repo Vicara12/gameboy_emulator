@@ -66,6 +66,10 @@ public:
   // displays the values in the internal memory (not including the value in "to")
   void displayMemoryChunk (int from, int to) const;
 
+  void pushPCToStack ();
+
+  void popPCFromStack ();
+
 private:
 
    Memory();

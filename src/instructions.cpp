@@ -42,7 +42,7 @@ bool Instruction::longPathTaken () const
 }
 
 InvalidInstruction::InvalidInstruction () :
-      Instruction(0,0, "INV   ", "(invalid operation code)") {}
+      Instruction(1,1, "INV   ", "(invalid operation code)") {}
 
 void InvalidInstruction::execute (uint8_t inst_first_byte,
                                   uint8_t inst_second_byte)

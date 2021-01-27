@@ -41,36 +41,28 @@ void CPU::disasemble (uint16_t from, uint16_t to, bool verbose) const
       bool cb_instr = opcode == 0xcb;
 
       if (cb_instr)
-         opcode = memory->readMem(++pc, true);
+         opcode = memory->readMem(pc+1, true);
       
-      Instruction* instr = cb_instr ? instruction_set[opcode] : CB_subset[opcode];
+      Instruction* instr = cb_instr ? CB_subset[opcode] : instruction_set[opcode];
 
-      std::cout << "pc " << Memory::getHex(pc);
-      std::cout << ": " << Memory::getHex(opcode);
-      if (cb_instr) std::cout << " (CB)";
-      if (verbose)
+      std::cout << Memory::getHex(pc, 4) << " | ";
+
+      int instr_size = instr->getByteSize();
+
+      // display hex data of the instruction
+      for (int i = 0; i < 3; i++)
       {
-         std::cout << "(" << instr->getByteSize() << ", ";
-         if (instr->extraCycleTime() != 0)
-            std::cout << instr->extraCycleTime() << "\\";
-         std::cout << instr->getCycleLenght() << ")";
-      }
-      std::cout << "\t" << instr->name();
+         if (i < instr_size)
+            std::cout << Memory::getHex(memory->readMem(pc+i));
+         else
+            std::cout << "    ";
 
-      if (verbose)
-      {
-         if (instr->getByteSize() > 1 and not cb_instr)
-         {
-            std::cout << "\t(" << Memory::getHex(memory->readMem(pc+1, true));
-            if (instr->getByteSize() > 2)
-               std::cout << " | " << Memory::getHex(memory->readMem(pc+2, true));
-            std::cout << ")  ";
-         }
-
-         std::cout << instr->description();
+         std::cout << " ";
       }
 
-      std::cout << std::endl;
+      std::cout << "| ";
+
+      this->displayInstructionInfo(opcode, cb_instr, verbose);
 
       pc += instr->getByteSize();
    }

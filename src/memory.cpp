@@ -322,3 +322,15 @@ void Memory::displayMemoryChunk (int from, int to) const
       std::cout << "[" << getHex(i, 4) << "] = " <<
                    getHex(internal_mem[i]) << std::endl;
 }
+
+void Memory::pushPCToStack ()
+{
+   internal_mem[--reg_sp] = uint8_t(reg_pc >> 8);
+   internal_mem[--reg_sp] = uint8_t(reg_pc);
+}
+
+void Memory::popPCFromStack ()
+{
+   uint8_t low_byte = internal_mem[reg_sp++];
+   reg_pc = (internal_mem[reg_sp++] << 8) | low_byte;
+}
