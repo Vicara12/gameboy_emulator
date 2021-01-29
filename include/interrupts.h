@@ -38,8 +38,8 @@ public:
    uint16_t interruptActive ();
 
    // check and set the status of the IF flag for a given interrupt
-   bool getIFStatus (int priority) const;
-   void setIFStatus (int priority, bool new_value);
+   static bool getIFStatus (int priority);
+   static void setIFStatus (int priority, bool new_value);
 
 private:
 
