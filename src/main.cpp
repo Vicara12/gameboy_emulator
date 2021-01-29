@@ -1,55 +1,49 @@
 #include <iostream>
 #include "gbmemory.h"
-#include "cpu.h"
+#include "interrupts.h"
 using namespace std;
 
 #define INSTRUCTION  0xcf
 #define MEM_FROM     0x0100
 #define MEM_TO       0x010a
 
+#define IE_ADDRESS   0xffff
+#define IF_ADDRESS   0xff0f
+
 int main ()
 {
-   CPU cpu;
+   Interrupts inter;
    Memory* memory = Memory::getInstance();
 
-   cout << endl;
+   memory->changeIntEnabled(true);
+   memory->writeMem(IE_ADDRESS, 0xf7, false);
+   memory->writeMem(IF_ADDRESS, 0x00, false);
 
-   memory->writeReg(Memory::Register::PC, 0x010a);
+   cout << Memory::getHex(inter.interruptActive(), 4) << endl;
+   cout << Memory::getHex(inter.interruptActive(), 4) << endl;
 
-   memory->writeReg(Memory::Register::HL, 0x0107);
-   memory->writeReg(Memory::Register::A, 0x42);
+   cout << "--------\n";
 
-   memory->writeReg(Memory::Register::SP, 0x0105);
+   memory->writeMem(0xff0f, 0x02, false);
 
-   memory->changeIntEnabled(false);
+   inter.setIFStatus(1, true);
+
+   inter.setIFStatus(4, true);
+
+   inter.setIFStatus(5, true);
+
+   cout << Memory::getHex(inter.interruptActive(), 4) << endl;
+   cout << Memory::getHex(inter.interruptActive(), 4) << endl;
+   cout << Memory::getHex(inter.interruptActive(), 4) << endl;
+   cout << Memory::getHex(inter.interruptActive(), 4) << endl;
+
+   memory->writeMem(IE_ADDRESS, 0xff, false);
+
+   cout << Memory::getHex(inter.interruptActive(), 4) << endl;
+   cout << Memory::getHex(inter.interruptActive(), 4) << endl;
+   cout << Memory::getHex(inter.interruptActive(), 4) << endl;
+   cout << Memory::getHex(inter.interruptActive(), 4) << endl;
 
 
-   for (int i = MEM_FROM; i < MEM_TO; i++)
-      memory->writeMem(i, (i*3)%0x100);
-
-
-   memory->writeFlag(Memory::Flag::N_f, false);
-   memory->writeFlag(Memory::Flag::C_f, false);
-   memory->writeFlag(Memory::Flag::Z_f, false);
-   memory->writeFlag(Memory::Flag::H_f, false);
-
-   memory->displayMemoryChunk(MEM_FROM, MEM_TO);
-
-   cout << endl;
-
-   memory->outputMemoryStatus(true);
-   cout << "CLK:  " << cpu.getCLK() << endl;
-
-   cout << endl;
-
-   //cpu.executeInstruction(INSTRUCTION, 0x34, 0x12, false, false);
-
-   //cpu.executeInstruction(0x00, 0, 0, false, false);
-
-   cout << endl;
-
-   memory->outputMemoryStatus(true);
-   cout << "CLK:  " << cpu.getCLK() << endl;
-
-   memory->displayMemoryChunk(MEM_FROM, MEM_TO);
+   cout << Memory::getHex(memory->readMem(IF_ADDRESS), 4) << endl;
 }

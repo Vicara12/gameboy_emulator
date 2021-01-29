@@ -24,9 +24,16 @@ Memory::Memory () :
       debug_flags_regs(false),
       cpu_halted(false),
       cpu_stopped(false),
-      cpu_int_enabled(true),
+      cpu_int_enabled(false),
       cpu_int_status_cahnge_needed(NONE)
 {
+   reg_af = 0;
+   reg_bc = 0;
+   reg_de = 0;
+   reg_hl = 0;
+   reg_pc = 0;
+   reg_sp = 0xfffe;
+
    // copy the contents of the startup program to main memory (0x00 to 0xff)
    for (int i = 0; i < sizeof(BOOT_ROM_CONTENT); i++)
    {
@@ -117,7 +124,16 @@ void Memory::writeMem (uint16_t address, uint8_t value, bool silent)
    if (debug_mode and not silent)
       std::cout << "W m: [" << getHex(address) << "] <- " << value << std::endl;
 
-   internal_mem[address] = value;
+   // check if it is trying to writte into a forbidden area
+   if ((address >= 0xe000 and address < 0xfe00) or
+       (address >= 0xfea0 and address < 0xff00))
+   {
+      if (not silent)
+         std::cout << "WARNING: trying to write a forbidden address " <<
+                      getHex(address, 4) << std::endl;
+   }
+   else
+      internal_mem[address] = value;
 }
 
 uint16_t Memory::readReg (Register reg, bool silent) const
