@@ -5,6 +5,8 @@ OPTIONS = -D_GLIBCXX_DEBUG -O2 -Wall -Werror -Wno-unused-parameter -Wextra\
 
 EXE_NAME = gameboi.exe
 
+SFML_COMP = -lsfml-graphics -lsfml-window -lsfml-system
+
 
 ################################################################################
 
@@ -25,7 +27,7 @@ all: bin/$(EXE_NAME)
 
 # linking
 bin/$(EXE_NAME): $(ALL_O)
-	g++ $(OPTIONS) -o $@ $^
+	g++ $(OPTIONS) -o $@ $^ $(SFML_COMP)
 
 # generic build instruction
 build/%.o: src/%.cpp

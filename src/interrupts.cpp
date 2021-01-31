@@ -104,3 +104,14 @@ void Interrupts::setIFStatus (int priority, bool new_value)
       memory->writeMem(IF_ADDRESS, if_register, true);
    }
 }
+
+void Interrupts::activateIFBit (int priority)
+{
+   uint8_t if_register = Memory::getInstance()->readMem(IF_ADDRESS, true);
+
+   uint8_t mask = (1 << (priority-1));
+
+   if_register |= mask;
+
+   Memory::getInstance()->writeMem(IF_ADDRESS, if_register, true);
+}

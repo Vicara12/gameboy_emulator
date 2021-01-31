@@ -2,8 +2,7 @@
 #define PADINPUT_H_
 
 #include <list>
-#include <unistd.h>
-#include <termios.h>
+#include <SFML/Window.hpp>
 #include "gbmemory.h"
 #include "interrupts.h"
 
@@ -22,37 +21,30 @@ BUTTON-KEYBOARD MAPPING:
 
 */
 
-#define     UP_BUTTON  'w'
-#define   DOWN_BUTTON  's'
-#define   LEFT_BUTTON  'a'
-#define  RIGHT_BUTTON  'd'
-#define      A_BUTTON  'o'
-#define      B_BUTTON  'k'
-#define SELECT_BUTTON  'n'
-#define  START_BUTTON  'm'
+#define     UP_BUTTON  sf::Keyboard::W
+#define   DOWN_BUTTON  sf::Keyboard::S
+#define   LEFT_BUTTON  sf::Keyboard::A
+#define  RIGHT_BUTTON  sf::Keyboard::D
+#define      A_BUTTON  sf::Keyboard::O
+#define      B_BUTTON  sf::Keyboard::K
+#define SELECT_BUTTON  sf::Keyboard::N
+#define  START_BUTTON  sf::Keyboard::M
+
+#define IO_REGISTER_ADDRESS  0xff00
 
 
 class PadInput
 {
 public:
 
-   PadInput();
-
-   void initNoEchoMode ();
-   void endNoEchoMode ();
-
    // automatically detects pressed buttons
-   void processInput ();
+   static void processInput ();
 
 private:
 
-   // returns a list of pressed keys from the button set
-   std::list<char> getPressedKeys ();
+   PadInput();
 
-
-   struct termios initial_settings; // initial terminal configuration
-   Memory* memory;
-   Interrupts interrupts;
+   static Memory* memory;
 };
 
 

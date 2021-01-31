@@ -37,9 +37,8 @@ public:
    // one after the other in descending priority order.
    uint16_t interruptActive ();
 
-   // check and set the status of the IF flag for a given interrupt
-   static bool getIFStatus (int priority);
-   static void setIFStatus (int priority, bool new_value);
+   // sets the corresponding bit of the IF flag to 1
+   static void activateIFBit (int priority);
 
 private:
 
@@ -49,6 +48,10 @@ private:
    // check and set the status of the IE flag for a given interrupt
    bool getIEStatus (int priority) const;
    void setIEStatus (int priority, bool new_value);
+
+   // check and set the status of the IF flag for a given interrupt
+   bool getIFStatus (int priority) const;
+   void setIFStatus (int priority, bool new_value);
 
 
    Memory* memory;
