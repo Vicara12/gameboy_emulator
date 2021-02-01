@@ -3,6 +3,7 @@
 
 CPU::CPU () :
    clock(0),
+   debug_mode(false),
    verbose_debug(false),
    disp_reg_debug(false)
 {
