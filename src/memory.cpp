@@ -121,6 +121,10 @@ uint8_t Memory::readMem (uint16_t address, bool silent) const
 
 void Memory::writeMem (uint16_t address, uint8_t value, bool silent)
 {
+   // special timer register, always write to 0
+   if (address == 0xff04)
+      value = 0;
+
    if (debug_mode and not silent)
       std::cout << "W m: [" << getHex(address) << "] <- " << value << std::endl;
 
@@ -134,6 +138,16 @@ void Memory::writeMem (uint16_t address, uint8_t value, bool silent)
    }
    else
       internal_mem[address] = value;
+}
+
+void Memory::writeMemUnprotected (uint16_t address,
+                                  uint8_t value,
+                                  bool silent)
+{
+   if (debug_mode and not silent)
+      std::cout << "Wu m: [" << getHex(address) << "] <- " << value << std::endl;
+
+   internal_mem[address] = value;
 }
 
 uint16_t Memory::readReg (Register reg, bool silent) const

@@ -36,6 +36,8 @@ public:
 
   uint8_t readMem (uint16_t address, bool silent = false) const;
   void writeMem (uint16_t address, uint8_t value, bool silent = false);
+  // this method is like writeMem but it does not check for write protections
+  void writeMemUnprotected (uint16_t address, uint8_t value, bool silent = false);
 
   // if the register is 8 bit long, only the lower byte will be used
   uint16_t readReg (Register reg, bool silent = false) const;
