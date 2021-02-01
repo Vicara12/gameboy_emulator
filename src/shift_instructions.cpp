@@ -1,5 +1,6 @@
-
 #include "shift_instructions.h"
+
+
 
 Rotate::Rotate (bool right, bool through_c, Memory::Register reg, bool fast_a) :
       Instruction(fast_a ? 1 : 2,
@@ -28,6 +29,7 @@ Rotate::Rotate (bool right, bool through_c, Memory::Register reg, bool fast_a) :
    }
    
 }
+
 
 void Rotate::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -83,6 +85,7 @@ Shift::Shift (bool right, Memory::Register reg, bool logical) :
                               (logical_ ? " logical" : " arithmetic") + ")");
 }
 
+
 void Shift::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint8_t val;
@@ -126,6 +129,7 @@ Swap::Swap (Memory::Register reg) :
                   "(swap nibbles of register " + Memory::regString(reg) + ")"),
       reg_(reg) {}
 
+
 void Swap::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint8_t val;
@@ -164,6 +168,7 @@ Bit::Bit (Memory::Register reg, unsigned bit) :
       reg_(reg),
       bit_(bit) {}
 
+
 void Bit::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint8_t val;
@@ -195,6 +200,7 @@ SetResetBit::SetResetBit (Memory::Register reg, unsigned bit, bool set) :
       reg_(reg),
       bit_(bit),
       set_(set) {}
+
 
 void SetResetBit::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {

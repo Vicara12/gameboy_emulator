@@ -20,6 +20,7 @@ public:
    std::string description () const;
    unsigned getByteSize () const;
    unsigned getCycleLenght () const;
+   bool invalidInstruction () const;
 
    // exclusive for instructions with variable cycle duration
    // (must override if that's the case)
@@ -43,6 +44,7 @@ public:
 
    InvalidInstruction ();
    virtual void execute (uint8_t inst_first_byte, uint8_t inst_second_byte);
+   bool invalidInstruction () const;
 };
 
 struct InstructionDoesNotExist : public std::exception

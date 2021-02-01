@@ -1,5 +1,6 @@
 #include "load_instructions.h"
 
+
 NormalLD::NormalLD (Memory::Register reg_write,
                     Memory::Register reg_read,
                     bool immediate_8bit) :
@@ -22,6 +23,7 @@ NormalLD::NormalLD (Memory::Register reg_write,
    if (immediate_8bit)
       instr_cycles++;
 }
+
 
 void NormalLD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -79,6 +81,7 @@ DoubleByteLD::DoubleByteLD (bool reg_at_read, bool register_a) :
                                   : "register " + reg_str) + ")";
 }
 
+
 void DoubleByteLD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint16_t address = (inst_second_byte << 8) | inst_first_byte;
@@ -119,6 +122,7 @@ HLIterateLD::HLIterateLD (bool hl_read, bool hl_increment) :
                                 "HL)";
 }
 
+
 void HLIterateLD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint16_t address = memory->readReg(Memory::Register::HL);
@@ -155,6 +159,7 @@ FF00LD::FF00LD (bool register_a_read, bool use_register_c) :
                                 ")";
 }
 
+
 void FF00LD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint16_t address = 0xff00 + (use_c ? memory->readReg(Memory::Register::C) :
@@ -174,6 +179,7 @@ Number16bitToRegLD::Number16bitToRegLD (Memory::Register reg) :
                   Memory::regString(reg) + ")"),
       reg_(reg) {}
 
+
 void Number16bitToRegLD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint16_t value = (inst_second_byte << 8) | inst_first_byte;
@@ -186,6 +192,7 @@ void Number16bitToRegLD::execute (uint8_t inst_first_byte, uint8_t inst_second_b
 InstructionF8LD::InstructionF8LD () :
       Instruction(2, 3, "LD    HL, SP+r8",
                   "(load value of SP plus r8 signed value into HL register)") {}
+
 
 void InstructionF8LD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -213,6 +220,7 @@ PushLD::PushLD (Memory::Register reg) :
                   "(push the value of " + Memory::regString(reg) + "into stack)"),
       reg_(reg) {}
 
+
 void PushLD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint16_t sp = memory->readReg(Memory::Register::SP);
@@ -230,6 +238,7 @@ PopLD::PopLD (Memory::Register reg) :
       Instruction(1, 3, "POP   " + Memory::regString(reg, false),
                   "(pop the value of " + Memory::regString(reg) + "from stack)"),
       reg_(reg) {}
+
 
 void PopLD::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {

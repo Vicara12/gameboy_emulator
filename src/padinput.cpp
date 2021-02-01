@@ -1,9 +1,10 @@
 #include "padinput.h"
-#include <curses.h>
+
 
 Memory *PadInput::memory = Memory::getInstance();
 
 PadInput::PadInput () {}
+
 
 
 void PadInput::processInput ()

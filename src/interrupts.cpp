@@ -105,6 +105,7 @@ void Interrupts::setIFStatus (int priority, bool new_value)
    }
 }
 
+
 void Interrupts::activateIFBit (int priority)
 {
    uint8_t if_register = Memory::getInstance()->readMem(IF_ADDRESS, true);

@@ -7,6 +7,7 @@ IncAI::IncAI (Memory::Register reg) :
                   "(increment register " + Memory::regString(reg) + ")"),
       reg_(reg) {}
 
+
 void IncAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint8_t reg_val = Memory::registerIs16bits(reg_) ?
@@ -31,6 +32,7 @@ DecAI::DecAI (Memory::Register reg) :
                   "DEC   " + Memory::regString(reg),
                   "(decrement register " + Memory::regString(reg)),
       reg_(reg) {}
+
 
 void DecAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -84,6 +86,7 @@ ArithmeticOperationAI::ArithmeticOperationAI (Memory::Register reg,
                                  (op_ == ADC or op_ == SBC ? " with carry" : "")
                                  + ")"; 
 }
+
 
 void ArithmeticOperationAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -148,6 +151,7 @@ void ArithmeticOperationAI::execute (uint8_t inst_first_byte, uint8_t inst_secon
 DecimalAdjustAI::DecimalAdjustAI () :
       Instruction(1, 1, "DAA   ", "(decimal adjust register A)") {}
 
+
 void DecimalAdjustAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint8_t reg_a = memory->readReg(Memory::Register::A);
@@ -185,6 +189,7 @@ void DecimalAdjustAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte
 CompAAI::CompAAI () :
       Instruction(1, 1, "CPL   ", "(flip bits of register A)") {}
 
+
 void CompAAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint8_t reg_a = memory->readReg(Memory::Register::A);
@@ -200,6 +205,7 @@ ChangeCFlagAI::ChangeCFlagAI (bool complement) :
       Instruction(1, 1, (complement ? "CCF   " : "SCF   "),
                   "(" + std::string(complement ? "flip" : "set") + " carry flag)"),
       complement_ (complement) {}
+
 
 void ChangeCFlagAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -219,6 +225,7 @@ IncDec16BitAI::IncDec16BitAI (Memory::Register reg, bool inc) :
       inc_ (inc),
       reg_ (reg) {}
 
+
 void IncDec16BitAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    uint16_t reg = memory->readReg(reg_);
@@ -232,6 +239,7 @@ Add16BitsAI::Add16BitsAI (Memory::Register reg) :
       Instruction(1, 2, "ADD   HL, " + Memory::regString(reg, false),
                   "(add registers HL and " + Memory::regString(reg, false)),
       reg_ (reg) {}
+
 
 void Add16BitsAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -249,6 +257,7 @@ void Add16BitsAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 ADDr8SPAI::ADDr8SPAI () :
       Instruction(2, 4, "ADD   SP, r8",
                   "(add signed r8 value to SP register)") {}
+
 
 void ADDr8SPAI::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {

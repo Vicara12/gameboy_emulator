@@ -8,7 +8,9 @@ clock_t Timer::clk = 0;
 unsigned long Timer::gb_cpu_clk = 0;
 unsigned long Timer::last_gb_clk_TIMA_actualization = 0;
 
+
 Timer::Timer () {}
+
 
 void Timer::beginTimer ()
 {
@@ -23,6 +25,7 @@ void Timer::beginTimer ()
    memory->writeMem(DIV_ADDRESS, 0, true);
 }
 
+
 void Timer::startTimer ()
 {
    if (not timer_stopped)
@@ -32,6 +35,7 @@ void Timer::startTimer ()
 
    clk = clock();
 }
+
 
 void Timer::stopTimer ()
 {
@@ -43,6 +47,7 @@ void Timer::stopTimer ()
    
    timer_stopped = true;
 }
+
 
 void Timer::actualizeTime (bool actualize_registers)
 {
@@ -60,10 +65,12 @@ void Timer::actualizeTime (bool actualize_registers)
       actualizeTimerRegisters();
 }
 
+
 void Timer::actualizeTimerRegisters ()
 {
    //
 }
+
 
 unsigned long Timer::getClock ()
 {

@@ -8,7 +8,9 @@ bool Oscillator::timer_stopped;
 float Oscillator::paused_s;
 
 
+
 Oscillator::Oscillator () {}
+
 
 void Oscillator::beginOscillator ()
 {
@@ -16,6 +18,7 @@ void Oscillator::beginOscillator ()
    timer_stopped = false;
    paused_s = 0;
 }
+
 
 void Oscillator::startOscillator ()
 {
@@ -29,6 +32,7 @@ void Oscillator::startOscillator ()
    timer_stopped = false;
 }
 
+
 void Oscillator::stopOscillator ()
 {
    if (timer_stopped)
@@ -41,10 +45,12 @@ void Oscillator::stopOscillator ()
    timer_stopped = true;
 }
 
+
 unsigned long Oscillator::getClockCycles ()
 {
    return getTime() * GB_CLK_FREQ;
 }
+
 
 float Oscillator::getTime ()
 {

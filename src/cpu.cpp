@@ -1,5 +1,5 @@
-
 #include "cpu.h"
+
 
 CPU::CPU () :
    clock(0),
@@ -12,6 +12,7 @@ CPU::CPU () :
    initInstructionVectors();
 }
 
+
 void CPU::changeDebugMode (bool enable,
                            bool registers_and_flags,
                            bool verbose,
@@ -21,6 +22,7 @@ void CPU::changeDebugMode (bool enable,
    debug_mode = enable;
    verbose_debug = verbose;
 }
+
 
 void CPU::displayInstructionSet (bool verbose) const
 {
@@ -33,6 +35,7 @@ void CPU::displayInstructionSet (bool verbose) const
          std::cout << "\n\n";
    }
 }
+
 
 void CPU::disasemble (uint16_t from, uint16_t to, bool verbose) const
 {
@@ -68,6 +71,7 @@ void CPU::disasemble (uint16_t from, uint16_t to, bool verbose) const
       pc += instr->getByteSize();
    }
 }
+
 
 void CPU::executeInstruction (uint8_t opcode,
                               uint8_t first_byte,
@@ -123,11 +127,13 @@ void CPU::executeInstruction (uint8_t opcode,
       clock += instruction->getCycleLenght();
 }
 
+
 void CPU::enableCPU ()
 {
    if (memory->cpuStopped())     memory->changeCpuStop(false);
    else if (memory->cpuHalted()) memory->changeCpuHalt(false);
 }
+
 
 void CPU::displayInstructionInfo (uint8_t opcode,
                                   bool cb_subset,
@@ -170,6 +176,7 @@ void CPU::displayInstructionInfo (uint8_t opcode,
    
    std::cout << std::endl;
 }
+
 
 unsigned long CPU::getCLK () const
 {

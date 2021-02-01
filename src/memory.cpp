@@ -5,10 +5,13 @@
 
 Memory* Memory::instance = new Memory();
 
+
+
 Memory* Memory::getInstance ()
 {
    return instance;
 }
+
 
 bool Memory::registerIs16bits (Register reg)
 {
@@ -18,6 +21,7 @@ bool Memory::registerIs16bits (Register reg)
    else
       return false;
 }
+
 
 Memory::Memory () :
       debug_mode(false),
@@ -41,11 +45,13 @@ Memory::Memory () :
    }
 }
 
+
 void Memory::changeDebugMode (bool debug, bool show_flags_and_regs)
 {
    debug_mode = debug;
    debug_flags_regs = show_flags_and_regs;
 }
+
 
 void Memory::loadROM (std::string rom_file_name)
 {
@@ -62,6 +68,7 @@ void Memory::loadROM (std::string rom_file_name)
    for (int i = 0; i < sizeof(main_ROM_content); i++)
       internal_mem[i] = main_ROM_content[i];
 }
+
 
 std::string Memory::getHex (unsigned n, int min_size)
 {
@@ -111,6 +118,7 @@ std::string Memory::getHex (unsigned n, int min_size)
    return std::string(buff);
 }
 
+
 uint8_t Memory::readMem (uint16_t address, bool silent) const
 {
    if (debug_mode and not silent)
@@ -118,6 +126,7 @@ uint8_t Memory::readMem (uint16_t address, bool silent) const
 
    return internal_mem[address];
 }
+
 
 void Memory::writeMem (uint16_t address, uint8_t value, bool silent)
 {
@@ -140,6 +149,7 @@ void Memory::writeMem (uint16_t address, uint8_t value, bool silent)
       internal_mem[address] = value;
 }
 
+
 void Memory::writeMemUnprotected (uint16_t address,
                                   uint8_t value,
                                   bool silent)
@@ -149,6 +159,7 @@ void Memory::writeMemUnprotected (uint16_t address,
 
    internal_mem[address] = value;
 }
+
 
 uint16_t Memory::readReg (Register reg, bool silent) const
 {
@@ -175,6 +186,7 @@ uint16_t Memory::readReg (Register reg, bool silent) const
    return 0xffff;
 }
 
+
 void Memory::writeReg (Register reg, uint16_t value, bool silent)
 {
    if (debug_mode and debug_flags_regs and not silent)
@@ -199,6 +211,7 @@ void Memory::writeReg (Register reg, uint16_t value, bool silent)
    }
 }
 
+
 bool Memory::readFlag (Flag f, bool silent) const
 {
    if (debug_mode and debug_flags_regs and not silent)
@@ -209,6 +222,7 @@ bool Memory::readFlag (Flag f, bool silent) const
    else if  (f == H_f) return (reg_af & 0x0020) != 0;
    else                return (reg_af & 0x0010) != 0;
 }
+
 
 void Memory::writeFlag (Flag f, bool value, bool silent)
 {
@@ -232,10 +246,12 @@ void Memory::writeFlag (Flag f, bool value, bool silent)
    else        reg_af = reg_af & (mask ^ 0xffff);
 }
 
+
 bool Memory::cpuHalted () const
 {
    return cpu_halted;
 }
+
 
 void Memory::changeCpuHalt (bool halted)
 {
@@ -245,10 +261,12 @@ void Memory::changeCpuHalt (bool halted)
    cpu_halted = halted;
 }
 
+
 bool Memory::cpuStopped () const
 {
    return cpu_stopped;
 }
+
 
 void Memory::changeCpuStop (bool stop)
 {
@@ -258,10 +276,12 @@ void Memory::changeCpuStop (bool stop)
    cpu_stopped = stop;
 }
 
+
 bool Memory::intEnabled () const
 {
    return cpu_int_enabled;
 }
+
 
 void Memory::changeIntEnabled (bool int_enabled)
 {
@@ -271,14 +291,18 @@ void Memory::changeIntEnabled (bool int_enabled)
    cpu_int_status_cahnge_needed = NONE;
 }
 
+
 Memory::InterruptionStatusChange Memory::checkInterruptChange () const
 {
    return cpu_int_status_cahnge_needed;
 }
+
+
 void Memory::changeInterruptChange (InterruptionStatusChange new_status)
 {
    cpu_int_status_cahnge_needed = new_status;
 }
+
 
 std::string Memory::regString (Register reg, bool pointer)
 {
@@ -303,6 +327,7 @@ std::string Memory::regString (Register reg, bool pointer)
    return "???";
 }
 
+
 std::string Memory::flagString (Flag flag)
 {
    switch (flag)
@@ -315,6 +340,7 @@ std::string Memory::flagString (Flag flag)
 
    return "???";
 }
+
 
 void Memory::outputMemoryStatus (bool verbose) const
 {
@@ -346,6 +372,7 @@ void Memory::outputMemoryStatus (bool verbose) const
    std::cout << "SP:   " << getHex(reg_sp, 4) << std::endl;
 }
 
+
 void Memory::displayMemoryChunk (int from, int to) const
 {
    for (int i = from; i < to; i++)
@@ -353,11 +380,13 @@ void Memory::displayMemoryChunk (int from, int to) const
                    getHex(internal_mem[i]) << std::endl;
 }
 
+
 void Memory::pushPCToStack ()
 {
    internal_mem[--reg_sp] = uint8_t(reg_pc >> 8);
    internal_mem[--reg_sp] = uint8_t(reg_pc);
 }
+
 
 void Memory::popPCFromStack ()
 {

@@ -1,8 +1,10 @@
-
 #include "other_instructions.h"
+
+
 
 NOP::NOP () :
       Instruction(1, 1, "NOP   ", "(no operation instruction)") {}
+
 
 void NOP::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -14,6 +16,7 @@ void NOP::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 Halt::Halt () :
       Instruction(1, 1, "HALT  ", "(stop CPU until an interrupt is received)") {}
 
+
 void Halt::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    memory->changeCpuHalt(true);
@@ -23,6 +26,7 @@ void Halt::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 
 Stop::Stop () :
       Instruction(1, 1, "STOP  ", "(stop CPU until a joypad input)") {}
+
 
 void Stop::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -35,6 +39,7 @@ InterruptionED::InterruptionED (bool enable) :
       Instruction(1, 1, (enable ? "EI" : "DI") + std::string("    "),
                   "(" + std::string(enable ? "enable" : "disable") + " interrupts)"),
       enable_(enable) {}
+
 
 void InterruptionED::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
@@ -105,6 +110,7 @@ JumpCall::JumpCall (bool call, bool relative, Source source, Type type) :
    
 }
 
+
 void JumpCall::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
 {
    bool jump = false;
@@ -151,10 +157,12 @@ void JumpCall::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
    alternative_path_taken = jump;
 }
 
+
 unsigned JumpCall::extraCycleTime () const
 {
    return alternative_path_cpu_cycles;
 }
+
 
 bool JumpCall::longPathTaken () const
 {
@@ -278,10 +286,12 @@ void Return::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
    }
 }
 
+
 unsigned Return::extraCycleTime () const
 {
    return jump_cpu_cycles;
 }
+
 
 bool Return::longPathTaken () const
 {
