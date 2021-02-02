@@ -5,6 +5,9 @@
 
 #include "gbmemory.h"
 #include "instructions.h"
+#include "interrupts.h"
+#include "timer.h"
+#include "padinput.h"
 
 
 class CPU
@@ -38,6 +41,10 @@ public:
                             bool CB_subset,
                             bool ignore_CPU_disable = false);
    
+   // one iteration of the CPU cycle (execute next instruction unless halt or
+   // stop)
+   void executeCPUCycle ();
+   
    // disable halt or stop
    void enableCPU();
 
@@ -49,6 +56,8 @@ private:
 
    unsigned long clock;
    Memory* memory;
+   Interrupts interrupts;
+   Timer timer;
    bool debug_mode, verbose_debug, disp_reg_debug;
 
    // instruction for each address

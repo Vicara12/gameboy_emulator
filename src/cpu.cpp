@@ -3,12 +3,12 @@
 
 CPU::CPU () :
    clock(0),
+   memory(Memory::getInstance()),
+   timer(clock),
    debug_mode(false),
    verbose_debug(false),
    disp_reg_debug(false)
 {
-   memory = Memory::getInstance();
-
    initInstructionVectors();
 }
 
@@ -181,4 +181,52 @@ void CPU::displayInstructionInfo (uint8_t opcode,
 unsigned long CPU::getCLK () const
 {
    return clock;
+}
+
+
+void CPU::executeCPUCycle ()
+{
+   // if cpu is stopped, don't do anything (as there is not a reset signal)
+   if (memory->cpuStopped())
+      return;
+
+   // actualize CPU functions
+   timer.actualizeTimerRegisters(clock);
+   PadInput::processInput();
+   
+   // if CPU is halted, check if there is an interrupt and if so get out of halt
+   if (memory->cpuHalted())
+   {
+      // if can't exit halt, increment clock and return
+      if (not interrupts.haltExit())
+      {
+         clock++;
+         return;
+      }
+      else
+         memory->changeCpuHalt(false);
+   }
+
+   // check if there is any interrupt
+   uint16_t new_pc = interrupts.interruptActive();
+
+   if (new_pc != 0x0000)
+   {
+      memory->pushPCToStack();
+      memory->writeReg(Memory::Register::PC, new_pc, true);
+   }
+
+   // fetch, decode and execute instruction
+   uint16_t pc = memory->readReg(Memory::Register::PC, true);
+
+   uint8_t instr_opcode = memory->readMem(pc, true);
+   uint8_t first_byte   = memory->readMem(pc, true);
+   uint8_t second_byte  = memory->readMem(pc, true);
+
+   // if opcode is cb, the code of the instruction is at the next byte (and
+   // select cb subset at instruction execution)
+   if (instr_opcode == 0xcb)
+      executeInstruction(first_byte, 0x00, 0x00, true);
+   else
+      executeInstruction(instr_opcode, first_byte, second_byte, false);
 }

@@ -37,6 +37,10 @@ public:
    // one after the other in descending priority order.
    uint16_t interruptActive ();
 
+   // returns true if there is an enabled interrupt pending (even with the IME
+   // deactivated)
+   bool haltExit () const;
+
    // sets the corresponding bit of the IF flag to 1
    static void activateIFBit (int priority);
 

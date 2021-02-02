@@ -116,3 +116,15 @@ void Interrupts::activateIFBit (int priority)
 
    Memory::getInstance()->writeMem(IF_ADDRESS, if_register, true);
 }
+
+bool Interrupts::haltExit () const
+{
+   for (int i = 1; i <= 5; i++)
+   {
+      // if IF flag is active and is enabled in the IE register return true
+      if (getIEStatus(i) and getIFStatus(i))
+         return true;
+   }
+
+   return false;
+}
