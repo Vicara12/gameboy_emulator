@@ -2,7 +2,6 @@
 #define TIMER_H_
 
 #include "gbmemory.h"
-#include <chrono>
 
 
 // timer register addresses
@@ -14,42 +13,28 @@
 /*
 
 This class handles the timer and its registers. Not to be confused with
-timing, that regulates the speed of the emulation.
+Oscillator, that handles time managing of the emulation.
 
 */
 class Timer
 {
 public:
 
-   // this method must be called at power up, it sets up registers
-   static void beginTimer ();
+   Timer (unsigned long initial_clock);
 
-   // starts and stops internal clock of the system (timer must be inited first)
-   static void startTimer ();
-   static void stopTimer ();
-
-   // this method must be called periodically
-   // if parameters are true this also actualizes the content of the timer
-   // registers, otherwise it only increments the cpu clock
-   static void actualizeTime (bool actualize_registers);
-
-   // returns the value of the internal CPU clock
-   static unsigned long getClock ();
+   void actualizeTimerRegisters (unsigned long clk);
 
 private:
 
-   Timer ();
+   // returns true if the timer is active in the TAC register
+   bool timerOn ();
 
-   static void actualizeTimerRegisters ();
+   // returns the power of two that divides the frequncy for the source
+   int clockSource ();
 
-
-   static bool timer_stopped;
-   static Memory *memory;
-   static clock_t clk;  // real program cpu clock
-   static unsigned long gb_cpu_clk; // emulated gameboy's cpu clock
-   static unsigned long last_gb_clk_TIMA_actualization; // value of gb_cpu_clk
-                                                // the last time the TIMA reg
-                                                // was actualized
+   bool timer_stopped;
+   Memory *memory;
+   unsigned int last_clock;
 };
 
 #endif

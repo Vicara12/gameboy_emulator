@@ -1,80 +1,42 @@
 #include <cstdint>
 #include "timer.h"
 #include "interrupts.h"
-
-bool Timer::timer_stopped = 0;
-Memory *Timer::memory = Memory::getInstance();
-clock_t Timer::clk = 0;
-unsigned long Timer::gb_cpu_clk = 0;
-unsigned long Timer::last_gb_clk_TIMA_actualization = 0;
+#include "oscillator.h"
 
 
-Timer::Timer () {}
 
-
-void Timer::beginTimer ()
+Timer::Timer (unsigned long initial_clock) :
+      memory(Memory::getInstance()),
+      last_clock(initial_clock)
 {
-   clk = clock();
-   gb_cpu_clk = 0;
-   last_gb_clk_TIMA_actualization = 0;
-   timer_stopped = false;
-
-   // setup GB timer registers
-   uint8_t TMA_value = memory->readMem(TMA_ADDRESS, true);
-   memory->writeMem(TIMA_ADDRESS, TMA_value, true);
-   memory->writeMem(DIV_ADDRESS, 0, true);
+   timer_stopped = not timerOn();
 }
 
 
-void Timer::startTimer ()
-{
-   if (not timer_stopped)
-      return;
-   
-   timer_stopped = false;
-
-   clk = clock();
-}
-
-
-void Timer::stopTimer ()
-{
-   if (timer_stopped)
-      return;
-   
-   // actualize value of gb clock before stopping
-   actualizeTime(false);
-   
-   timer_stopped = true;
-}
-
-
-void Timer::actualizeTime (bool actualize_registers)
-{
-   // check if cpu is halted or stopped
-   if (memory->cpuHalted() or memory->cpuStopped() or timer_stopped)
-      return;
-
-   //clock_t old_clk = clk;
-   clk = clock();
-
-   // convert from  program clock to gb clock
-   //gb_cpu_clk += (clk - old_clk)/float(CLOCKS_PER_SEC/GB_CLK_FREQ);
-
-   if (actualize_registers)
-      actualizeTimerRegisters();
-}
-
-
-void Timer::actualizeTimerRegisters ()
+void Timer::actualizeTimerRegisters (unsigned long clk)
 {
    //
 }
 
 
-unsigned long Timer::getClock ()
+bool Timer::timerOn ()
 {
-   actualizeTime(false);
+   // bit 3 of the TAC register indicates if the clock is on
+   return memory->readMem(TAC_ADDRESS, true) & 0x04;
+}
 
-   return gb_cpu_clk;
+
+int Timer::clockSource ()
+{
+   uint8_t source = memory->readMem(TAC_ADDRESS, true) & 0x03;
+
+   switch (source)
+   {
+      case 0: return 10; // f/2^10  (  4096 kHz)
+      case 1: return 4;  // f/2^4   (262144 kHz)
+      case 2: return 6;  // f/2^6   ( 65536 kHz)
+      case 3: return 8;  // f/2^8   ( 16384 kHz)
+   }
+
+   return -1;
 }
