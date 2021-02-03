@@ -11,10 +11,8 @@
 #define  TAC_ADDRESS 0xff07
 
 /*
-
 This class handles the timer and its registers. Not to be confused with
 Oscillator, that handles time managing of the emulation.
-
 */
 class Timer
 {
@@ -29,12 +27,17 @@ private:
    // returns true if the timer is active in the TAC register
    bool timerOn ();
 
-   // returns the power of two that divides the frequncy for the source
+   // returns the number that divides the frequncy for the source
    int clockSource ();
+
+   void incrementTIMARegister (unsigned long clk);
+
+   void incrementDIVRegister (unsigned long clk);
 
    bool timer_stopped;
    Memory *memory;
-   unsigned int last_clock;
+   unsigned int last_clock_tima, last_clock_div; // value of clk last time the
+                                                // registers were actualized
 };
 
 #endif

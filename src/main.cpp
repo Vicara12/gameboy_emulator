@@ -8,26 +8,34 @@ using namespace std;
 #define MEM_FROM     0x0100
 #define MEM_TO       0x010a
 
-#define IO_REGISTER_ADDRESS  0xff00
+// timer register addresses
+#define  DIV_ADDRESS 0Xff04
+#define TIMA_ADDRESS 0xff05
+#define  TMA_ADDRESS 0xff06
+#define  TAC_ADDRESS 0xff07
 
 int main ()
 {   
    Memory* memory = Memory::getInstance();
    CPU cpu;
 
-   Oscillator::beginOscillator();
+   memory->writeReg(Memory::Register::PC, 0x0000, true);
 
-   for (int i = 0; i < 0x200; i++)
+   // setup timer registers
+   
+
+   // load a sample program in memory
+   memory->writeMem(0x0000, 0x00, true);
+   memory->writeMem(0x0001, 0x00, true);
+   memory->writeMem(0x0002, 0x00, true);
+   memory->writeMem(0x0003, 0x00, true);
+   // jp to 00
+   memory->writeMem(0x0004, 0xc3, true);
+   memory->writeMem(0x0005, 0x00, true);
+   memory->writeMem(0x0006, 0x00, true);
+
+   for (int i = 0; i < 0x100; i++)
    {
-      if (i>=0xc0 and i<0x100) continue;
-
-      unsigned long t1 = Oscillator::getClockCycles();
-      cpu.executeInstruction(i%100, 0x00, 0x00, i >= 0x100, false);
-      unsigned long t2 = Oscillator::getClockCycles();
-
-      cout << Memory::getHex(i) << ": " << (t2-t1) << endl;
-
-      memory->changeCpuHalt(false);
-      memory->changeCpuStop(false);
+      //
    }
 }
