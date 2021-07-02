@@ -148,6 +148,7 @@ void JumpCall::execute (uint8_t inst_first_byte, uint8_t inst_second_byte)
          case HL: {value = memory->readReg(Memory::Register::HL); break;}
       }
 
+
       if (relative_) pc += (value-2);  // substract 2 because of PC increment
       else           pc = value;
 

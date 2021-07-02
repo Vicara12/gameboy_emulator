@@ -104,19 +104,20 @@ void CPU::executeInstruction (uint8_t opcode,
    
    // get the instruction
    Instruction* instruction = CB ? CB_subset[opcode] : instruction_set[opcode];
-   
-   // increment PC
+
    uint16_t pc = memory->readReg(Memory::Register::PC);
-   pc += instruction->getByteSize();
-   memory->writeReg(Memory::Register::PC, pc);
 
    // if in debug mode, output debug info
    if (debug_mode)
    {
-      std::cout << "clk : " << clock << std::endl;
+      std::cout << "clk:" << clock << " pc:" << Memory::getHex(pc, 4) << " | ";
       std::cout << (CB ? "exCB: " : "ex:   ");
       displayInstructionInfo(opcode, CB, verbose_debug);
    }
+
+   // increment PC
+   pc += instruction->getByteSize();
+   memory->writeReg(Memory::Register::PC, pc);
 
    instruction->execute(first_byte, second_byte);
 
@@ -219,9 +220,9 @@ void CPU::executeCPUCycle ()
    // fetch, decode and execute instruction
    uint16_t pc = memory->readReg(Memory::Register::PC, true);
 
-   uint8_t instr_opcode = memory->readMem(pc, true);
-   uint8_t first_byte   = memory->readMem(pc, true);
-   uint8_t second_byte  = memory->readMem(pc, true);
+   uint8_t instr_opcode = memory->readMem(pc,   true);
+   uint8_t first_byte   = memory->readMem(pc+1, true);
+   uint8_t second_byte  = memory->readMem(pc+2, true);
 
    // if opcode is cb, the code of the instruction is at the next byte (and
    // select cb subset at instruction execution)
