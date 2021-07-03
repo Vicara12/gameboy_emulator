@@ -6,7 +6,16 @@
 
 int main ()
 {
-   PixelProcessingUnit::getInstance()->test();
+   Memory::getInstance()->writeMem(0xff45, 100, true);
+
+   // turn lcd on
+   Memory::getInstance()->writeMem(0xff40, 0x80, true);
+   Memory::getInstance()->writeMem(0xff41, 0x74, true);
+
+   for (int i = 0; i < 18000; i++)
+   {
+      PixelProcessingUnit::getInstance()->actualize(i);
+   }
 }
 
 

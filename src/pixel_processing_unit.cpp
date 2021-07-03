@@ -1,8 +1,6 @@
 #include "pixel_processing_unit.h"
 
 
-#include <iostream>
-
 PixelProcessingUnit *PixelProcessingUnit::instance = new PixelProcessingUnit();
 
 
@@ -57,12 +55,28 @@ void PixelProcessingUnit::actualize (unsigned long current_clk)
     // lcd on
     else if (lcdOn)
     {
-        uint8_t current_lcd_state = getCurrentLCDstate();
+        uint8_t current_lcd_state = getCurrentLCDstate(clk_last_action);
+
+        // actualize new action
+        if (current_clk >= clk_next_action)
+        {
+            clk_last_action = clk_next_action;
+            clk_next_action = getClkNextLCDstateChange();
+            current_lcd_state = getCurrentLCDstate(clk_last_action);
+
+            // check for OAM read or HBlank iterrupts
+            if ((current_lcd_state == HBlank and HBlankInterruptSet()) or
+                (current_lcd_state == SearchingOAM and OAMreadInterruptSet()))
+            {
+                interrupts.activateIFBit(2);
+            }
+        }
+
+        uint8_t line = current_clk%clk_per_frame/clk_per_line;
 
         // actualize line number
-        if (current_clk >= clk_next_action and current_lcd_state == SearchingOAM)
+        if (line != getLY())
         {
-            uint8_t line = current_clk%clk_per_frame/clk_per_line;
             writeLY(line);
 
             if (line == getLYC())
@@ -102,19 +116,6 @@ void PixelProcessingUnit::actualize (unsigned long current_clk)
         {
             line_pixels_drawn = false;
         }
-
-        // actualize new action
-        if (current_clk >= clk_next_action)
-        {
-            clk_last_action = clk_next_action;
-            clk_next_action = getClkNextLCDstateChange();
-
-            // check for OAM read or HBlank iterrupts
-            if (current_lcd_state == HBlank and HBlankInterruptSet() or
-                current_lcd_state == SearchingOAM and OAMreadInterruptSet())
-                interrupts.activateIFBit(2);
-        }
-        
     }
     // if lcd is off, no work is done
 
@@ -132,46 +133,6 @@ void PixelProcessingUnit::processNextLine ()
     // check for drawing window or sprites deactivated
 
     // set interrupts for VBlank
-
-}
-
-void PixelProcessingUnit::test ()
-{
-    for (int i = 0; i < 1*clk_per_frame; i++)
-    {
-        current_clk = i;
-
-        unsigned long next_action = getClkNextLCDstateChange();
-
-        if (current_clk >= next_action)
-        {
-            clk_last_action = next_action;
-            next_action = getClkNextLCDstateChange();
-        }
-        
-        std::cout << i << ": ";
-        switch (getCurrentLCDstate())
-        {
-            case 0:
-                std::cout << "HBlank";
-                break;
-            case 1:
-                std::cout << "VBlank";
-                break;
-            case 2:
-                std::cout << "OAM search";
-                break;
-            case 3:
-                std::cout << "LCD transfer";
-                break;
-        }
-        std::cout << "   next clk: " << next_action;
-
-        if (i%5 == 0)
-            std::cout << ""<< std::endl;
-        else
-            std::cout << " || \t";
-    }
 }
 
 
@@ -194,10 +155,10 @@ unsigned long PixelProcessingUnit::getClkNextLCDstateChange ()
 }
 
 
-LCDstate PixelProcessingUnit::getCurrentLCDstate ()
+LCDstate PixelProcessingUnit::getCurrentLCDstate (unsigned long clk)
 {
     // get clk relative to the beggining of the current frame
-    uint reminder = current_clk%clk_per_frame;
+    uint reminder = clk%clk_per_frame;
 
     if (reminder >= clk_per_line*SCREEN_LINES)
         return VBlank;
@@ -265,7 +226,7 @@ bool PixelProcessingUnit::spriteDisplayEnable ()
 bool PixelProcessingUnit::whiteBGactivated ()
 {
     uint8_t reg_value = memory->readMem(0xff40, true);
-    return not reg_value&0x01;
+    return not (reg_value&0x01);
 }
 
 
@@ -314,28 +275,28 @@ uint8_t PixelProcessingUnit::getWX ()
 bool PixelProcessingUnit::LYCcoincidenceInterruptSet ()
 {
     uint8_t reg_value = memory->readMem(0xff41, true);
-    return not reg_value&0x40;
+    return reg_value&0x40;
 }
 
 
 bool PixelProcessingUnit::OAMreadInterruptSet ()
 {
     uint8_t reg_value = memory->readMem(0xff41, true);
-    return not reg_value&0x20;
+    return reg_value&0x20;
 }
 
 
 bool PixelProcessingUnit::VBlankInterruptSet ()
 {
     uint8_t reg_value = memory->readMem(0xff41, true);
-    return not reg_value&0x10;
+    return reg_value&0x10;
 }
 
 
 bool PixelProcessingUnit::HBlankInterruptSet ()
 {
     uint8_t reg_value = memory->readMem(0xff41, true);
-    return not reg_value&0x08;
+    return reg_value&0x08;
 }
 
 

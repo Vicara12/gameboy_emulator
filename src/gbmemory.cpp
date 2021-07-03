@@ -147,6 +147,13 @@ void Memory::writeMem (uint16_t address, uint8_t value, bool silent)
    }
    else
       internal_mem[address] = value;
+   
+   // check if data write is a DMA transfer
+   if (address == 0xff46)
+   {
+      for (uint16_t i = 0; i < 0x100; i++)
+         internal_mem[0xfe00 + i] = internal_mem[(uint16_t)value*0x100 + i];
+   }
 }
 
 

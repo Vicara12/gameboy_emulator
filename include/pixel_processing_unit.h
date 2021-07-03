@@ -26,8 +26,6 @@ public:
     // must be called at every emulation cycle
     void actualize (unsigned long current_clk);
 
-    void test ();
-
 private:
 
     PixelProcessingUnit ();
@@ -36,7 +34,7 @@ private:
     unsigned long getClkNextLCDstateChange ();
 
     // returns the state on wich the LCD is ins
-    LCDstate getCurrentLCDstate ();
+    LCDstate getCurrentLCDstate (unsigned long clk);
 
     void processNextLine ();
 
