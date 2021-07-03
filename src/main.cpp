@@ -3,6 +3,14 @@
 #include <unistd.h>
 
 
+
+int main ()
+{
+   PixelProcessingUnit::getInstance()->test();
+}
+
+
+/*
 int main ()
 {
    LCD lcd;
@@ -16,8 +24,6 @@ int main ()
 }
 
 
-
-/*
 #include <iostream>
 #include <unistd.h>
 #include "gbmemory.h"
